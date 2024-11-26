@@ -1,0 +1,107 @@
+digraph LIST{
+harset = "UTF-8";
+node [shape=plaintext];
+bgcolor = "#0000aa";
+fontcolor = black;
+fontsize = 18;
+style = "italic";
+margin = 1;
+ranksep = 1;
+nodesep = 3;
+bgcolor = "#aedeb0";
+"0x604000000050" [style = "filled", fillcolor = "#b18b62",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  0x604000000010</td></tr>
+<tr><td colspan="2">Address: 0x604000000050</td></tr>
+<tr><td colspan="2">sum</td></tr>
+<tr><td align = "center" >Left:0x604000000090</td><td align = "center" >Right:0x6040000000d0</td></tr></table>>];
+
+"0x604000000010" -> "0x604000000050";
+"0x604000000090" [style = "filled", fillcolor = "lightgreen",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  0x604000000050</td></tr>
+<tr><td colspan="2">Address: 0x604000000090</td></tr>
+<tr><td colspan="2">number</td></tr>
+<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
+
+"0x604000000050" -> "0x604000000090";
+"0x604000000090" -> "0x604000000098";
+"0x604000000098" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x604000000090" -> "0x6040000000a0";
+"0x6040000000a0" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x6040000000d0" [style = "filled", fillcolor = "lightgreen",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  0x604000000050</td></tr>
+<tr><td colspan="2">Address: 0x6040000000d0</td></tr>
+<tr><td colspan="2">variable</td></tr>
+<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
+
+"0x604000000050" -> "0x6040000000d0";
+"0x6040000000d0" -> "0x6040000000d8";
+"0x6040000000d8" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x6040000000d0" -> "0x6040000000e0";
+"0x6040000000e0" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x604000000110" [style = "filled", fillcolor = "#b18b62",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  0x604000000010</td></tr>
+<tr><td colspan="2">Address: 0x604000000110</td></tr>
+<tr><td colspan="2">subdivision</td></tr>
+<tr><td align = "center" >Left:0x604000000150</td><td align = "center" >Right:0x604000000190</td></tr></table>>];
+
+"0x604000000010" -> "0x604000000110";
+"0x604000000150" [style = "filled", fillcolor = "lightgreen",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  0x604000000110</td></tr>
+<tr><td colspan="2">Address: 0x604000000150</td></tr>
+<tr><td colspan="2">number</td></tr>
+<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
+
+"0x604000000110" -> "0x604000000150";
+"0x604000000150" -> "0x604000000158";
+"0x604000000158" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x604000000150" -> "0x604000000160";
+"0x604000000160" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x604000000190" [style = "filled", fillcolor = "lightgreen",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  0x604000000110</td></tr>
+<tr><td colspan="2">Address: 0x604000000190</td></tr>
+<tr><td colspan="2">number</td></tr>
+<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
+
+"0x604000000110" -> "0x604000000190";
+"0x604000000190" -> "0x604000000198";
+"0x604000000198" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x604000000190" -> "0x6040000001a0";
+"0x6040000001a0" [style = "filled", fillcolor = "#ff9191", label=<
+<table border = "0" cellspacing="2" cellpadding="4">
+<tr><td>NULL</td></tr></table>>];
+
+"0x604000000010" [style = "filled", fillcolor = "#ced7ea",label=<
+<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="2">Parent:  (nil)</td></tr>
+<tr><td colspan="2">Address: 0x604000000010</td></tr>
+<tr><td colspan="2">divison </td></tr>
+<tr><td align = "center" >Left:0x604000000050</td><td align = "center" >Right:0x604000000110</td></tr></table>>];
+
+}
