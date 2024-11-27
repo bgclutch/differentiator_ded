@@ -1,1 +1,1 @@
-(divison (sum(number)(variable))(subdivision(number)(number)))
+(divison (sum(x)(y))(subdivision(cot)(number)))

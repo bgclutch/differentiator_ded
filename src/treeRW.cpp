@@ -6,6 +6,7 @@
 
 #include "../inc/bintree.h"
 #include "../inc/akinator.h"
+#include "../inc/exprtree.h"
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../lib_file_proc/file.h"
 
@@ -49,7 +50,7 @@ Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size)
 }
 
 
-Akinator_Err read_tree_from_file(Tree* tree)
+Akinator_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_st)
 {
     assert(tree);
 
@@ -70,9 +71,11 @@ Akinator_Err read_tree_from_file(Tree* tree)
     size_t all_bytes = 0;
 
     size_t root_question_size = get_node_data_size(root_question);
-    all_bytes += root_question_size;
 
-    node_init(&tree->root, root_question, root_question_size);
+    if(node_init(&tree->root, root_question_size, root_question, variable_array_st) != NODE_IS_OKAY)
+        assert(0);
+
+    all_bytes += root_question_size;
 
     Node* root_addr = tree->root;
 
@@ -80,7 +83,7 @@ Akinator_Err read_tree_from_file(Tree* tree)
     root_addr->right  = nullptr;
     root_addr->parent = nullptr;
 
-    if(init_tree_nodes(root_addr, buffer, &all_bytes) != AKINATOR_STILL_ALIVE)
+    if(init_tree_nodes(root_addr, buffer, &all_bytes, variable_array_st) != AKINATOR_STILL_ALIVE)
     {
         free(buffer);
         return AKINATOR_IS_DEAD;
@@ -122,21 +125,21 @@ char* find_word_begin(char* buffer, const char* bufend)
 }
 
 
-void create_new_node(Node** node, char* buffer, size_t* all_bytes)
+void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
 {
     assert(!*node);
     assert(buffer);
     assert(all_bytes);
 
-    const char* bufend = buffer + strlen(buffer);
-    char* word_begin = find_word_begin(buffer + *all_bytes, bufend);
+    const char* bufend = buffer + strlen(buffer); // not optimal
+    char* arg_begin = find_word_begin(buffer + *all_bytes, bufend);
 
-    size_t elem_size = get_node_data_size(word_begin);
+    size_t elem_size = get_node_data_size(arg_begin);
 
-    *all_bytes += (size_t)(word_begin - (buffer + *all_bytes));
+    *all_bytes += (size_t)(arg_begin - (buffer + *all_bytes));
     *all_bytes += elem_size;
 
-    node_init(node, word_begin, elem_size);
+    node_init(node, elem_size, arg_begin, variable_array_st);
 
     if(*(buffer + *all_bytes) == ')')
     {
@@ -144,10 +147,10 @@ void create_new_node(Node** node, char* buffer, size_t* all_bytes)
     }
     else
     {
-        create_new_node(&(*node)->left, buffer, all_bytes);
+        create_new_node(&(*node)->left, buffer, all_bytes, variable_array_st);
         (*node)->left->parent = *node;
 
-        create_new_node(&(*node)->right, buffer, all_bytes);
+        create_new_node(&(*node)->right, buffer, all_bytes, variable_array_st);
         (*node)->right->parent = *node;
     }
     return;
@@ -166,22 +169,23 @@ size_t get_node_data_size(const char* word_beginning)
 }
 
 
-Akinator_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes)
+Akinator_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
 {
     assert(node);
     assert(buffer);
     assert(all_bytes);
 
-    create_new_node(&node->left, buffer, all_bytes);
+    create_new_node(&node->left, buffer, all_bytes, variable_array_st);
     node->left->parent = node;
 
-    create_new_node(&node->right, buffer, all_bytes);
+    create_new_node(&node->right, buffer, all_bytes, variable_array_st);
     node->right->parent = node;
 
     return AKINATOR_STILL_ALIVE;
 }
 
 
+#if 0
 Akinator_Err write_tree_to_file(Node* root, const char* outputfilename)
 {
     assert(root);
@@ -216,7 +220,6 @@ Akinator_Err write_tree_to_file(Node* root, FILE* file)
     return AKINATOR_STILL_ALIVE;
 }
 
-
 void write_nodes_to_file(Node* node, FILE* file)
 {
     assert(node);
@@ -242,21 +245,23 @@ void write_nodes_to_file(Node* node, FILE* file)
     fprintf(file, "}");
     return;
 }
+#endif
 
 
-Tree tree_ctor()
+Tree tree_ctor(Variable_Array_St* variable_array_st)
 {
     Tree tree = {};
-    read_tree_from_file(&tree);
+    read_tree_from_file(&tree, variable_array_st);
 
     return tree;
 }
 
 
-void tree_dtor(Tree* tree)
+void tree_dtor(Tree* tree, Variable_Array_St* variable_array_st)
 {
     assert(tree);
 
     tree_branch_dtor(tree->root, tree->buffer, strlen(tree->buffer));
+    DtorVariablesArray(variable_array_st);
     free(tree->buffer);
 }

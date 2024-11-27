@@ -215,15 +215,31 @@ void close_file_html(const char* filename)
 }
 
 
-void print_data_string(const char* data, const size_t data_size, FILE* dump_file)
+void print_data_string(const Value_Type* value, const Data_Type data_type, const size_t data_size, FILE* dump_file)
 {
-    assert(data);
     assert(dump_file);
 
-    for(size_t i = 0; i < data_size; i++)
-        fputc(data[i], dump_file);
+    switch (data_type)
+    {
+    case OPERAND:
+        fprintf(dump_file, "%c", value->arithmop.operand);
+        break;
+    case CONST:
+        fprintf(dump_file, "%lg", value->number);
+        break;
+    case VARIABLE:
+        fprintf(dump_file , "%lg", value->number);
+        break;
+    case FUNCTION:
+        fprintf(dump_file, "%c", value->varaible.var);
+        break;
+    case SYNTAXERROR:
+        assert(0);
+    default:
+        assert(0);
+    }
 }
-
+#
 
 void print_to_dump_file(const Node* node, FILE* dump_file, const Colors color)
 {
@@ -255,16 +271,18 @@ void print_to_dump_file(const Node* node, FILE* dump_file, const Colors color)
     fprintf(dump_file, ",label=<\n"
                        "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n"
                        "<tr><td colspan=\"2\">Parent:  %p</td></tr>\n"
-                       "<tr><td colspan=\"2\">Address: %p</td></tr>\n"
-                       "<tr><td colspan=\"2\">", node->parent, node);
+                       "<tr><td colspan=\"2\">Address: %p</td></tr>\n",
+                       node->parent, node);
 
-    print_data_string(node->data, node->data_size, dump_file);
+    fprintf(dump_file, "<tr><td colspan=\"2\">Data Type: %s</td></tr>\n"
+                       "<tr><td colspan=\"2\">", GetDataType(node));
+
+    print_data_string(&node->value, node->data_type, node->data_size, dump_file);
 
     fprintf(dump_file, "</td></tr>\n"
                        "<tr><td align = \"center\" >Left:%p</td><td align = \"center\" >Right:%p</td></tr></table>>];\n\n",
                        node->left, node->right);
 }
-
 
 Dump_Errors create_png(Dump_St* General_Dump, Node* root)
 {
@@ -307,3 +325,29 @@ void print_akinator_instruction()
             "ver 1.1\n");
 }
 #endif
+
+
+const char* GetDataType(const Node* node){
+    switch (node->data_type)
+    {
+        case VARIABLE:
+            return "variable";
+            break;
+        case CONST:
+            return "constant";
+            break;
+        case OPERAND:
+            return "operand";
+            break;
+        case FUNCTION:
+            return "function";
+            break;
+        case SYNTAXERROR:
+            return "SYNTAXERROR";
+            break;
+        default:
+            assert(0);
+    }
+
+    return "SYNTAXERROR";
+}

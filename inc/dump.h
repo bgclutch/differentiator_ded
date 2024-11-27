@@ -6,8 +6,6 @@
 #include "dump.h"
 #include "bintree.h"
 
-
-
 static const char* const PATH   = "dumps/html/";
 static const char* const GRAPH  = "graph_dump";
 static const char* const DOT    = "dot";
@@ -18,8 +16,6 @@ static const char* const HTMLXT = ".html";
 static const char* const PNGXT  = ".png";
 static const char* const TPNG   = "-Tpng";
 static const char* const CATPIC = "dumps/html/dump_monya.png";
-
-
 
 #define DUMP_ERR(result, error) if(dump_is_err(result, __FILE__, __LINE__) == MACRO_DUMP_ERR) return error
 
@@ -68,7 +64,7 @@ void fill_file_with_data(FILE* graph_dump_file, Node* node);
 
 void fill_file_with_null(FILE* graph_dump_file, void* node);
 
-void print_data_string(const char* data, const size_t data_size, FILE* dump_file);
+void print_data_string(const Value_Type* value, const Data_Type data_type, const size_t data_size, FILE* dump_file);
 
 void print_to_dump_file(const Node* node, FILE* dump_file, const Colors color);
 
@@ -86,5 +82,7 @@ void create_html(Dump_St General_Dump);
 Dump_Errors create_png(Dump_St* General_Dump, Node* root);
 
 void print_akinator_instruction();
+
+const char* GetDataType(const Node* node);
 
 #endif // DUMP_H_

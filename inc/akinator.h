@@ -65,30 +65,4 @@ Tree_Errors edit_node(Node** node, const NodeElem_t new_data, const size_t new_d
 
 Tree_Errors change_recieved_leaf(Node** node);
 
-void gamestart(Node* root);
-
-Node* akinator_func(Node* node);
-
-#if 0
-int find_define(Node* node, const char* word, Find_Res* retval, Main_Stack_Struct* stack);
-
-Akinator_Err getdefine(Node* root);
-
-void print_definition(Main_Stack_Struct* stack);
-
-Akinator_Err comparestart(Node* root);
-
-void compare_definitions_print(Main_Stack_Struct* first, Main_Stack_Struct* second);
-
-void stack_elem_outp(const StackElem_t elem, const Text_Colors color);
-#endif
-
-int is_left_node(Node* node);
-
-char* get_user_answer();
-
-char* get_user_sentence();
-
-void clean_buffer();
-
 #endif // AKINATOR_H_

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "../inc/exprtree.h"
 #include "../../lib_file_proc/file.h"
 #include "../../lib_buffer_proc/buffer.h"
 #if 0
@@ -35,7 +36,8 @@ void elem_dtor(void* elem)
 }
 
 
-Tree_Errors node_init(Node** node, const NodeElem_t elem, const size_t elem_size)
+Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin,
+                      Variable_Array_St* variable_array_st)
 {
     assert(!*node);
 
@@ -43,8 +45,11 @@ Tree_Errors node_init(Node** node, const NodeElem_t elem, const size_t elem_size
     new_node->left  = nullptr;
     new_node->right = nullptr;
 
+    new_node->data_type = GetNodeType(arg_begin, new_node->data_size);
+    new_node->value     = GetNodeValue(new_node->data_type, new_node->data_size, arg_begin, variable_array_st);
+
     *node = new_node;
-    (*node)->data = elem;
+
     (*node)->data_size = elem_size;
 
     if((*node)->left != nullptr || (*node)->right != nullptr)
@@ -128,7 +133,7 @@ Tree_Errors tree_is_err(const Tree_Errors result, const char* name, const size_t
     return MACRO_GOOD;
 }
 
-
+#if 0
 void tree_print(Node* node)
 {
     assert(node);
@@ -146,6 +151,7 @@ void tree_print(Node* node)
 
     fprintf(stderr, ")");
 }
+#endif
 
 
 void tree_branch_dtor(Node* node, const char* data, const size_t len)
@@ -162,11 +168,6 @@ void tree_branch_dtor(Node* node, const char* data, const size_t len)
         tree_branch_dtor(node->right, data, len);
     }
 
-    if(node->data < data || node->data > data + len)
-    {
-        free(node->data);
-        node->data = nullptr;
-    }
     free(node);
 
     return;

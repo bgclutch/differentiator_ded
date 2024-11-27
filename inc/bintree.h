@@ -2,28 +2,11 @@
 #define BINTREE_H_
 
 #include <stdio.h>
+#include "../inc/exprtree.h"
 
 #define NODE_ERR(result, error) if(tree_is_err(result, __FILE__, __LINE__) == MACRO_ERR) return error
 
 typedef char* NodeElem_t;
-
-struct Node
-{
-    char* data;
-    Node* left;
-    Node* right;
-    void* parent;
-    size_t data_size;
-};
-
-
-struct Tree
-{
-    Node* root; // ctor elem && dtor elem
-    char* buffer;
-    // tree size
-};
-
 
 enum Tree_Errors
 {
@@ -44,12 +27,12 @@ enum Tree_Errors
 
 const char* const DATABASE = "database2.txt";
 
-
 Tree_Errors insert(Node* node, NodeElem_t elem);
 
 Tree_Errors init_free_node(Node* node, const NodeElem_t elem, const NodeElem_t comp_elem, int* node_counter);
 
-Tree_Errors node_init(Node** node, const NodeElem_t elem, const size_t elem_size);
+Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin,
+                      Variable_Array_St* variable_array_st);
 
 void tree_branch_dtor(Node* node, const char* data, const size_t len);
 
