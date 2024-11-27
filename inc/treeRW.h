@@ -29,4 +29,6 @@ Tree tree_ctor(Variable_Array_St* variable_array_st);
 
 void tree_dtor(Tree* tree, Variable_Array_St* variable_array_st);
 
+int IsSpaceOrScope(const char symbol);
+
 #endif // TREERW_H_

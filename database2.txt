@@ -1,1 +1,1 @@
-(divison (sum(x)(y))(subdivision(cot)(number)))
+(/ (+(x)(32))(-(cot)(12)))

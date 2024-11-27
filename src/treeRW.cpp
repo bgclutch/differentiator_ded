@@ -120,7 +120,7 @@ char* find_word_begin(char* buffer, const char* bufend)
     assert(bufend);
     size_t index_buffer = 0;
 
-    for(; !isalpha(buffer[index_buffer]) && buffer + index_buffer < bufend; index_buffer++);
+    for(; IsSpaceOrScope(buffer[index_buffer]) && buffer + index_buffer < bufend; index_buffer++);
     return buffer + index_buffer;
 }
 
@@ -139,6 +139,7 @@ void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Arra
     *all_bytes += (size_t)(arg_begin - (buffer + *all_bytes));
     *all_bytes += elem_size;
 
+    fprintf(stderr, "elemsize:%lu\n", elem_size);
     node_init(node, elem_size, arg_begin, variable_array_st);
 
     if(*(buffer + *all_bytes) == ')')
@@ -164,6 +165,7 @@ size_t get_node_data_size(const char* word_beginning)
     size_t index = 0;
 
     for(; word_beginning[index] !='(' && word_beginning[index] != ')' && word_beginning[index] != '\0'; index++);
+
 
     return index;
 }
@@ -264,4 +266,12 @@ void tree_dtor(Tree* tree, Variable_Array_St* variable_array_st)
     tree_branch_dtor(tree->root, tree->buffer, strlen(tree->buffer));
     DtorVariablesArray(variable_array_st);
     free(tree->buffer);
+}
+
+
+int IsSpaceOrScope(const char symbol){
+    if (symbol == '(' || symbol == ')' || symbol == ' ')
+        return 1;
+
+    return 0;
 }

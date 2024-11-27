@@ -36,7 +36,7 @@ void elem_dtor(void* elem)
 }
 
 
-Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin,
+Tree_Errors  node_init(Node** node, const size_t elem_size, const char* arg_begin,
                       Variable_Array_St* variable_array_st)
 {
     assert(!*node);
@@ -45,8 +45,8 @@ Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin
     new_node->left  = nullptr;
     new_node->right = nullptr;
 
-    new_node->data_type = GetNodeType(arg_begin, new_node->data_size);
-    new_node->value     = GetNodeValue(new_node->data_type, new_node->data_size, arg_begin, variable_array_st);
+    new_node->data_type = GetNodeType(arg_begin, elem_size);
+    new_node->value     = GetNodeValue(new_node->data_type, elem_size, arg_begin, variable_array_st);
 
     *node = new_node;
 

@@ -45,27 +45,9 @@ Variable* VarArrayReallocation(Variable_Array_St* variable_array_st){
     return variable_array_st->var_array;
 }
 
-#if 0
-Node* CreateNewDiffNode(char* buffer, size_t* buffer_ptr, Variable_Array_St* variable_array_st){
-    Node* new_node = (Node*)calloc(sizeof(Node), sizeof(char));
-
-    if (!new_node)
-        return nullptr;
-
-    char* arg_begin     = FindArgBegin(buffer, buffer_ptr);
-    new_node->data_size = GetTokenDataSize(arg_begin);
-    new_node->data_type = GetNodeType(arg_begin, new_node->data_size);
-    new_node->value     = GetNodeValue(new_node->data_type, new_node->data_size, arg_begin, variable_array_st);
-
-    *buffer_ptr += new_node->data_size;
-
-    CreateNewNode(buffer, buffer_ptr, variable_array_st);
-    CreateNewNode();
-}
-#endif
-
 
 Data_Type GetNodeType(const char* arg_begin, const size_t arg_size){
+    fprintf(stderr, "argbegin:%.*s\nargsize:%lu\n\n", (int)arg_size, arg_begin, arg_size);
     if (IsOperand(*arg_begin, arg_size)){
         return OPERAND;
     }
@@ -92,9 +74,6 @@ size_t GetTokenDataSize(char* arg_begin){
 
 
 int IsOperand(const char argument, const size_t arg_size){
-    if (arg_size != 1)
-        return 0;
-
     int result = 0;
 
     if (argument == ADD)
