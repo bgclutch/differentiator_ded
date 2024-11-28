@@ -139,7 +139,6 @@ void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Arra
     *all_bytes += (size_t)(arg_begin - (buffer + *all_bytes));
     *all_bytes += elem_size;
 
-    fprintf(stderr, "elemsize:%lu\n", elem_size);
     node_init(node, elem_size, arg_begin, variable_array_st);
 
     if(*(buffer + *all_bytes) == ')')
@@ -158,13 +157,13 @@ void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Arra
 }
 
 
-size_t get_node_data_size(const char* word_beginning)
+size_t get_node_data_size(const char* word)
 {
-    assert(word_beginning);
+    assert(word);
 
     size_t index = 0;
 
-    for(; word_beginning[index] !='(' && word_beginning[index] != ')' && word_beginning[index] != '\0'; index++);
+    for(; word[index] !='(' && word[index] != ')' && word[index] != '\0'; index++);
 
 
     return index;

@@ -102,7 +102,7 @@ Data_Type GetNodeType(const char* arg_begin, const size_t arg_size);
 
 size_t GetTokenDataSize(char* arg_begin);
 
-int IsOperand(const char argument, const size_t arg_size);
+int IsOperand(const char argument);
 
 int IsConst(const char* argument, const size_t arg_size);
 

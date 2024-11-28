@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#include "../inc/colorised_output.h"
 #include "../lib_buffer_proc/buffer.h"
 #include "../lib_file_proc/file.h"
 
@@ -47,8 +48,8 @@ Variable* VarArrayReallocation(Variable_Array_St* variable_array_st){
 
 
 Data_Type GetNodeType(const char* arg_begin, const size_t arg_size){
-    fprintf(stderr, "argbegin:%.*s\nargsize:%lu\n\n", (int)arg_size, arg_begin, arg_size);
-    if (IsOperand(*arg_begin, arg_size)){
+    fprintf(stderr, "argument:"RED_TEXT("%.*s")"\nargsize:%lu\n", (int)arg_size, arg_begin, arg_size);
+    if (IsOperand(*arg_begin)){
         return OPERAND;
     }
     else if (IsConst(arg_begin, arg_size)){
@@ -73,7 +74,7 @@ size_t GetTokenDataSize(char* arg_begin){
 }
 
 
-int IsOperand(const char argument, const size_t arg_size){
+int IsOperand(const char argument){
     int result = 0;
 
     if (argument == ADD)
@@ -95,11 +96,14 @@ int IsConst(const char* argument, const size_t arg_size){
     int result = 1;
     for(size_t i = 0; i < arg_size; i++)
     {
-        if(!isalnum(argument[i]) && argument[i] != '.' && argument[i] != '+' && argument[i] != '-'){
+        fprintf(stderr,GREEN_TEXT("%c"), argument[i]);
+        if(!isdigit(argument[i]) && argument[i] != '.' && argument[i] != '-'){
             result = 0;
             break;
         }
     }
+
+    fprintf(stderr, "\n");
 
     return result;
 }
@@ -149,7 +153,8 @@ Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const
 
             break;
         case CONST:
-            memcpy(&value.number, argument, data_size);
+            fprintf(stderr, MAGENTA_TEXT("const:%.*s\n"), (int)data_size, argument);
+            value.number = atof(argument);
             break;
         case OPERAND:
             value.arithmop.operand     = GetOperand(*argument);

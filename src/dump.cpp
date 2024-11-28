@@ -228,10 +228,10 @@ void print_data_string(const Value_Type* value, const Data_Type data_type, const
         fprintf(dump_file, "%lg", value->number);
         break;
     case VARIABLE:
-        fprintf(dump_file , "%lg", value->number);
+        fprintf(dump_file , "%c", value->varaible.var);
         break;
     case FUNCTION:
-        fprintf(dump_file, "%c", value->varaible.var);
+        fprintf(dump_file, "%.*s", (int)data_size, value->funciton.func);
         break;
     case SYNTAXERROR:
         assert(0);

@@ -22,8 +22,8 @@ bgcolor = "#aedeb0";
 <table border="1" cellspacing="0" cellpadding="4">
 <tr><td colspan="2">Parent:  0x607000000170</td></tr>
 <tr><td colspan="2">Address: 0x6070000001e0</td></tr>
-<tr><td colspan="2">Data Type: constant</td></tr>
-<tr><td colspan="2">5.92879e-322</td></tr>
+<tr><td colspan="2">Data Type: variable</td></tr>
+<tr><td colspan="2">y</td></tr>
 <tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
 
 "0x607000000170" -> "0x6070000001e0";
@@ -42,7 +42,7 @@ bgcolor = "#aedeb0";
 <tr><td colspan="2">Parent:  0x607000000170</td></tr>
 <tr><td colspan="2">Address: 0x607000000250</td></tr>
 <tr><td colspan="2">Data Type: constant</td></tr>
-<tr><td colspan="2">6.34924e-320</td></tr>
+<tr><td colspan="2">32</td></tr>
 <tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
 
 "0x607000000170" -> "0x607000000250";
@@ -69,8 +69,8 @@ bgcolor = "#aedeb0";
 <table border="1" cellspacing="0" cellpadding="4">
 <tr><td colspan="2">Parent:  0x6070000002c0</td></tr>
 <tr><td colspan="2">Address: 0x607000000330</td></tr>
-<tr><td colspan="2">Data Type: constant</td></tr>
-<tr><td colspan="2">3.77006e-317</td></tr>
+<tr><td colspan="2">Data Type: function</td></tr>
+<tr><td colspan="2">cot</td></tr>
 <tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
 
 "0x6070000002c0" -> "0x607000000330";
@@ -89,7 +89,7 @@ bgcolor = "#aedeb0";
 <tr><td colspan="2">Parent:  0x6070000002c0</td></tr>
 <tr><td colspan="2">Address: 0x6070000003a0</td></tr>
 <tr><td colspan="2">Data Type: constant</td></tr>
-<tr><td colspan="2">6.34825e-320</td></tr>
+<tr><td colspan="2">12</td></tr>
 <tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
 
 "0x6070000002c0" -> "0x6070000003a0";

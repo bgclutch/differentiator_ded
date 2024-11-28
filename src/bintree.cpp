@@ -7,6 +7,8 @@
 #include "../inc/exprtree.h"
 #include "../../lib_file_proc/file.h"
 #include "../../lib_buffer_proc/buffer.h"
+#include "../inc/colorised_output.h"
+
 #if 0
 Tree_Errors insert(Node* node, NodeElem_t elem)
 {
@@ -46,6 +48,7 @@ Tree_Errors  node_init(Node** node, const size_t elem_size, const char* arg_begi
     new_node->right = nullptr;
 
     new_node->data_type = GetNodeType(arg_begin, elem_size);
+    fprintf(stderr, "data:"BLUE_TEXT("%.*s")"\ndatatype:%d\n\n", (int)elem_size, arg_begin, new_node->data_type);
     new_node->value     = GetNodeValue(new_node->data_type, elem_size, arg_begin, variable_array_st);
 
     *node = new_node;
