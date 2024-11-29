@@ -5,13 +5,13 @@
 #include <ctype.h>
 
 #include "../inc/bintree.h"
-#include "../inc/akinator.h"
+#include "../inc/differ.h"
 #include "../inc/exprtree.h"
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../lib_file_proc/file.h"
 
 
-Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size)
+Differ_Err create_data_buffer(char** buffer, size_t* buffer_size)
 {
     assert(!*buffer);
     assert(buffer_size);
@@ -19,7 +19,7 @@ Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size)
     FILE* buffer_file = nullptr;
 
     if(file_read_open(&buffer_file, DATABASE) != ALL_GOOD_RET_F)
-        return AKINATOR_BUFFER_FILE_OPEN_ERR;
+        return DIFFER_BUFFER_FILE_OPEN_ERR;
 
     *buffer_size = symbols_number(buffer_file);
     *buffer = buffer_create(*buffer_size, sizeof(char), buffer_file);
@@ -27,29 +27,29 @@ Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size)
     if(!*buffer)
     {
         if(file_close(buffer_file))
-            return AKINATOR_BUFFER_FILE_CLOSE_ERR;
+            return DIFFER_BUFFER_FILE_CLOSE_ERR;
 
-        return AKINATOR_BUFFER_CTOR_ERR;
+        return DIFFER_BUFFER_CTOR_ERR;
     }
 
     if(file_close(buffer_file))
-        return AKINATOR_BUFFER_FILE_CLOSE_ERR;
+        return DIFFER_BUFFER_FILE_CLOSE_ERR;
 
 
-    return AKINATOR_STILL_ALIVE;
+    return DIFFER_IS_OKAY;
 }
 
 
-Akinator_Err ReadTreeFromFileWithRecDescent(Tree* tree) {
+Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree) {
     assert(tree);
 
     size_t buffer_size = 0;
     char* buffer = nullptr;
 
-    if(create_data_buffer(&buffer, &buffer_size) != AKINATOR_STILL_ALIVE)
+    if(create_data_buffer(&buffer, &buffer_size) != DIFFER_IS_OKAY)
     {
         free(buffer);
-        return AKINATOR_BUFFER_CTOR_ERR;
+        return DIFFER_BUFFER_CTOR_ERR;
     }
 
     tree->buffer = buffer;
@@ -57,21 +57,21 @@ Akinator_Err ReadTreeFromFileWithRecDescent(Tree* tree) {
 
     tree->root = RecursiveDecent(tree->buffer, &position);
 
-    return AKINATOR_STILL_ALIVE;
+    return DIFFER_IS_OKAY;
 }
 
 #if 0
-Akinator_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_st)
+Differ_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_st)
 {
     assert(tree);
 
     size_t buffer_size = 0;
     char* buffer = nullptr;
 
-    if(create_data_buffer(&buffer, &buffer_size) != AKINATOR_STILL_ALIVE)
+    if(create_data_buffer(&buffer, &buffer_size) != DIFFER_IS_OKAY)
     {
         free(buffer);
-        return AKINATOR_BUFFER_CTOR_ERR;
+        return DIFFER_BUFFER_CTOR_ERR;
     }
 
     tree->buffer = buffer;
@@ -94,13 +94,13 @@ Akinator_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_s
     root_addr->right  = nullptr;
     root_addr->parent = nullptr;
 
-    if(init_tree_nodes(root_addr, buffer, &all_bytes, variable_array_st) != AKINATOR_STILL_ALIVE)
+    if(init_tree_nodes(root_addr, buffer, &all_bytes, variable_array_st) != DIFFER_IS_OKAY)
     {
         free(buffer);
-        return AKINATOR_IS_DEAD;
+        return DIFFER_IS_DEAD;
     }
 
-    return AKINATOR_STILL_ALIVE;
+    return DIFFER_IS_OKAY;
 }
 
 
@@ -152,13 +152,17 @@ Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left,
     new_node->value = value;
     new_node->left  = left;
     new_node->right = right;
+    if (left)
+        left->parent = new_node;
+    if (right)
+        right->parent = new_node;
 
     return new_node;
 }
 
 
 #if 0
-Akinator_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
+Differ_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
 {
     assert(node);
     assert(buffer);
@@ -170,11 +174,11 @@ Akinator_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variab
     create_new_node(&node->right, buffer, all_bytes, variable_array_st);
     node->right->parent = node;
 
-    return AKINATOR_STILL_ALIVE;
+    return DIFFER_IS_OKAY;
 }
 
 
-Akinator_Err write_tree_to_file(Node* root, const char* outputfilename)
+Differ_Err write_tree_to_file(Node* root, const char* outputfilename)
 {
     assert(root);
     assert(outputfilename);
@@ -182,16 +186,16 @@ Akinator_Err write_tree_to_file(Node* root, const char* outputfilename)
     FILE* write_tree_file = nullptr;
 
     if(file_write_open(&write_tree_file, outputfilename) == FILE_W_OPEN_ERR)
-        return AKINATOR_FILE_ERROR;
+        return DIFFER_FILE_ERROR;
 
     write_tree_to_file(root, write_tree_file);
     file_close(write_tree_file);
 
-    return AKINATOR_STILL_ALIVE;
+    return DIFFER_IS_OKAY;
 }
 
 
-Akinator_Err write_tree_to_file(Node* root, FILE* file)
+Differ_Err write_tree_to_file(Node* root, FILE* file)
 {
     assert(root);
     assert(file);
@@ -205,7 +209,7 @@ Akinator_Err write_tree_to_file(Node* root, FILE* file)
     write_nodes_to_file(root->right, file);
 
     fprintf(file, "}");
-    return AKINATOR_STILL_ALIVE;
+    return DIFFER_IS_OKAY;
 }
 
 void write_nodes_to_file(Node* node, FILE* file)
@@ -240,7 +244,6 @@ Tree tree_ctor()
 {
     Tree tree = {};
     ReadTreeFromFileWithRecDescent(&tree);
-    AddParentsToAllNodes(tree.root);
 
     return tree;
 }
@@ -392,18 +395,5 @@ Node* GetN(const char* string, size_t* position){
 void SyntaxError(const char* file, const size_t line){
     fprintf(stderr, "%s:%lu\n", file, line);
     assert(0);
-    return;
-}
-
-
-void AddParentsToAllNodes(Node* node){
-    if (node->left != nullptr && node->right != nullptr){
-        node->left->parent  = node;
-        AddParentsToAllNodes(node->left);
-    }
-    if (node->right != nullptr){
-        node->right->parent = node;
-        AddParentsToAllNodes(node->right);
-    }
     return;
 }

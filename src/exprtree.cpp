@@ -52,68 +52,6 @@ int IsFunction(const char* argument, const size_t arg_size){
 
 }
 
-#if 0
-Data_Type GetNodeType(const char* arg_begin, const size_t arg_size){
-    if (IsOperand(*arg_begin)){
-        return OPERAND;
-    }
-    else if (IsConst(*arg_begin)){
-        return CONST;
-    }
-    else if (IsFunction(arg_begin, arg_size)){
-        return FUNCTION;
-    }
-    else{
-        return VARIABLE;
-    }
-}
-
-
-int IsVariableExists(const char var, const Variable_Array_St variable_array_st){
-    for(size_t i = 0; i < variable_array_st.size; i++){
-        if (var == variable_array_st.var_array[i].var)
-            return 1;
-    }
-
-    return 0;
-}
-
-
-Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const char* argument){
-    Value_Type value = {};
-    switch (data_type){
-        case VARIABLE:
-            if (!IsVariableExists(*argument, *variable_array_st))
-                AddVariableToArray(*argument, variable_array_st);
-
-            memcpy(&value.varaible.var, argument, sizeof(char));
-
-            if ((value.varaible.var_num = FindVarNum(*argument, *variable_array_st)) == -1)
-                assert(0 && "InitNode variable ub\n");
-
-            break;
-        case CONST:
-            fprintf(stderr, MAGENTA_TEXT("const:%.*s\n"), (int)data_size, argument);
-            value.number = atof(argument);
-            break;
-        case OPERAND:
-            value.arithmop.operand     = GetOperand(*argument);
-            value.arithmop.operand_num = GetOperandNum(*argument);
-            break;
-        case FUNCTION:
-            value.funciton.func     = GetAlgFunc(argument, data_size);
-            value.funciton.func_num = GetAlgFuncNum(argument, data_size);
-            break;
-        case SYNTAXERROR:
-            assert(0);
-        default:
-            assert(0);
-    }
-
-    return value;
-}
-#endif
-
 char GetOperand(const char argument){
     if (argument == ADD)
         return ADD;

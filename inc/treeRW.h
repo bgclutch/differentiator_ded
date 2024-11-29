@@ -2,22 +2,22 @@
 #define TREERW_H_
 
 #include "bintree.h"
-#include "akinator.h"
+#include "differ.h"
 
 
-Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size);
+Differ_Err create_data_buffer(char** buffer, size_t* buffer_size);
 
-Akinator_Err write_tree_to_file(Node* root, const char* outpfilename);
+Differ_Err write_tree_to_file(Node* root, const char* outpfilename);
 
 void write_nodes_to_file(Node* node, FILE* file);
 
-Akinator_Err write_tree_to_file(Node* root, FILE* file);
+Differ_Err write_tree_to_file(Node* root, FILE* file);
 
 Tree tree_ctor();
 
 void tree_dtor(Tree* tree);
 
-Akinator_Err ReadTreeFromFileWithRecDescent(Tree* tree);
+Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree);
 
 Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right);
 
@@ -38,7 +38,5 @@ Node* GetPower(const char*, size_t*);
 Node* GetFunction(const char*, size_t*);
 
 void SyntaxError(const char* file, const size_t line);
-
-void AddParentsToAllNodes(Node* node);
 
 #endif // TREERW_H_
