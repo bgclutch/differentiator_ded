@@ -8,12 +8,10 @@
 
 int main(void)
 {
-    Variable_Array_St variable_array_st = {};
-    CtorVariablesArray(&variable_array_st);
-    Tree tree = tree_ctor(&variable_array_st);
+    Tree tree = tree_ctor();
     Dump_St dump_st = {};
     create_png(&dump_st, tree.root);
-    tree_dtor(&tree, &variable_array_st);
+    tree_dtor(&tree);
 
     return EXIT_SUCCESS;
 }

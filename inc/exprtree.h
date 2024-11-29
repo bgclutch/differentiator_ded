@@ -3,17 +3,6 @@
 
 #include <math.h>
 
-struct Variable{
-    char    var;
-    int var_num;
-};
-
-struct Variable_Array_St{
-    size_t size;
-    size_t capacity;
-    Variable* var_array;
-};
-
 enum Operand_Num{ // maybe struct array too?
     SYNTERR_N = -1,
     ADD_N     =  1,
@@ -44,7 +33,7 @@ struct Algebra_Func{
 
 struct Value_Type{
     Operand      arithmop;
-    Variable     varaible;
+    char         varaible;
     Algebra_Func funciton;
     double         number;
 };
@@ -61,7 +50,6 @@ struct Node{
     Node*        parent;
     Data_Type data_type;
     Value_Type    value;
-    size_t    data_size;
     Node*          left;
     Node*         right;
 };
@@ -100,20 +88,13 @@ enum Tree_Err
 
 Data_Type GetNodeType(const char* arg_begin, const size_t arg_size);
 
-size_t GetTokenDataSize(char* arg_begin);
-
 int IsOperand(const char argument);
 
-int IsConst(const char* argument, const size_t arg_size);
+int IsConst(char argument);
 
 int IsFunction(const char* argument, const size_t arg_size);
 
-int IsVariableExists(const char var, const Variable_Array_St variable_array_st);
-
-Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const char* argument,
-                        Variable_Array_St* variable_array_st);
-
-int FindVarNum(const char var, const Variable_Array_St variable_array_st);
+Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const char* argument);
 
 char GetOperand(const char argument);
 
@@ -122,14 +103,5 @@ Operand_Num GetOperandNum(const char argument);
 const char* GetAlgFunc(const char* argument, const size_t arg_size);
 
 Algebra_Func_Num GetAlgFuncNum(const char* argument, const size_t arg_size);
-
-
-void CtorVariablesArray(Variable_Array_St* variable_array_st);
-
-void AddVariableToArray(const char new_variable, Variable_Array_St* variable_array_st);
-
-void DtorVariablesArray(Variable_Array_St* variable_array_st);
-
-Variable* VarArrayReallocation(Variable_Array_St* variable_array_st);
 
 #endif // TREE_H_

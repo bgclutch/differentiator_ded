@@ -32,16 +32,6 @@ Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size)
         return AKINATOR_BUFFER_CTOR_ERR;
     }
 
-    size_t scope_difference = scope_checker(*buffer, *buffer_size);
-
-    if(scope_difference != 0)
-    {
-        fprintf(stderr, "begin and end scopes difference: %lu\n", scope_difference);
-        free(buffer);
-        if(file_close(buffer_file))
-            return AKINATOR_BUFFER_FILE_CLOSE_ERR;
-    }
-
     if(file_close(buffer_file))
         return AKINATOR_BUFFER_FILE_CLOSE_ERR;
 
@@ -50,6 +40,27 @@ Akinator_Err create_data_buffer(char** buffer, size_t* buffer_size)
 }
 
 
+Akinator_Err ReadTreeFromFileWithRecDescent(Tree* tree) {
+    assert(tree);
+
+    size_t buffer_size = 0;
+    char* buffer = nullptr;
+
+    if(create_data_buffer(&buffer, &buffer_size) != AKINATOR_STILL_ALIVE)
+    {
+        free(buffer);
+        return AKINATOR_BUFFER_CTOR_ERR;
+    }
+
+    tree->buffer = buffer;
+    size_t position = 0;
+
+    tree->root = RecursiveDecent(tree->buffer, &position);
+
+    return AKINATOR_STILL_ALIVE;
+}
+
+#if 0
 Akinator_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_st)
 {
     assert(tree);
@@ -93,58 +104,12 @@ Akinator_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_s
 }
 
 
-size_t scope_checker(const char* buffer, const size_t buffer_size)
-{
-    assert(buffer);
-
-    size_t counter_scope_begin = 0;
-    size_t counter_scope_end   = 0;
-
-    for(size_t index_buffer = 0; index_buffer < buffer_size; index_buffer++)
-    {
-        if(buffer[index_buffer] == '(')
-            counter_scope_begin++;
-
-        if(buffer[index_buffer] == ')')
-            counter_scope_end++;
-    }
-
-    return counter_scope_begin - counter_scope_end;
-}
-
-
-
-char* find_word_begin(char* buffer, const char* bufend)
-{
-    assert(buffer);
-    assert(bufend);
-    size_t index_buffer = 0;
-
-    for(; IsSpaceOrScope(buffer[index_buffer]) && buffer + index_buffer < bufend; index_buffer++);
-    return buffer + index_buffer;
-}
-
-
 void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
 {
     assert(!*node);
     assert(buffer);
     assert(all_bytes);
 
-    const char* bufend = buffer + strlen(buffer); // not optimal
-    char* arg_begin = find_word_begin(buffer + *all_bytes, bufend);
-
-    size_t elem_size = get_node_data_size(arg_begin);
-
-    *all_bytes += (size_t)(arg_begin - (buffer + *all_bytes));
-    *all_bytes += elem_size;
-
-    node_init(node, elem_size, arg_begin, variable_array_st);
-
-    if(*(buffer + *all_bytes) == ')')
-    {
-        return;
-    }
     else
     {
         create_new_node(&(*node)->left, buffer, all_bytes, variable_array_st);
@@ -155,21 +120,44 @@ void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Arra
     }
     return;
 }
+#endif
 
 
-size_t get_node_data_size(const char* word)
-{
-    assert(word);
+Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // NOTE value given as a struct!
+    Node* new_node = (Node*)calloc(sizeof(Node), 1);
+    switch (data_type) {
+    case VARIABLE:
+        new_node->data_type = VARIABLE;
+        break;
 
-    size_t index = 0;
+    case CONST:
+        new_node->data_type = CONST;
+        break;
 
-    for(; word[index] !='(' && word[index] != ')' && word[index] != '\0'; index++);
+    case OPERAND:
+        new_node->data_type = OPERAND;
+        break;
 
+    case FUNCTION:
+        new_node->data_type = FUNCTION;
+        break;
 
-    return index;
+    case SYNTAXERROR: // not good
+        assert(0);
+
+    default:
+        assert(0);
+    }
+
+    new_node->value = value;
+    new_node->left  = left;
+    new_node->right = right;
+
+    return new_node;
 }
 
 
+#if 0
 Akinator_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
 {
     assert(node);
@@ -186,7 +174,6 @@ Akinator_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variab
 }
 
 
-#if 0
 Akinator_Err write_tree_to_file(Node* root, const char* outputfilename)
 {
     assert(root);
@@ -249,28 +236,164 @@ void write_nodes_to_file(Node* node, FILE* file)
 #endif
 
 
-Tree tree_ctor(Variable_Array_St* variable_array_st)
+Tree tree_ctor()
 {
     Tree tree = {};
-    read_tree_from_file(&tree, variable_array_st);
+    ReadTreeFromFileWithRecDescent(&tree);
 
     return tree;
 }
 
 
-void tree_dtor(Tree* tree, Variable_Array_St* variable_array_st)
+void tree_dtor(Tree* tree)
 {
     assert(tree);
 
     tree_branch_dtor(tree->root, tree->buffer, strlen(tree->buffer));
-    DtorVariablesArray(variable_array_st);
     free(tree->buffer);
 }
 
 
-int IsSpaceOrScope(const char symbol){
-    if (symbol == '(' || symbol == ')' || symbol == ' ')
-        return 1;
 
-    return 0;
+Node* RecursiveDecent(const char* string, size_t* position){
+    return GetG(string, position); // root
+}
+
+Node* GetG(const char* string, size_t* position) {
+    Node* node = GetE(string, position);
+    if (string[*position] != '\0'){
+        fprintf(stderr, "GetG err: %s\n", string + (*position));
+        SyntaxError(__FILE__, __LINE__);
+    }
+    (*position)++;
+    return node;
+}
+
+Node* GetE(const char* string, size_t* position){
+    Node* node_left = GetT(string, position);
+    while (string[*position] == '+' || string[*position] == '-'){
+        int oper = string[*position];
+        (*position)++;
+        fprintf(stderr, "GetE: %c\n", string[*position]);
+        Node* node_right = GetT(string, position);
+        Value_Type value = {};
+        value.arithmop.operand     = GetOperand((char)oper);
+        value.arithmop.operand_num = GetOperandNum((char)oper);
+        return InitNewNode(OPERAND, value, node_left, node_right);
+    }
+
+    return node_left;
+}
+
+Node* GetT(const char* string, size_t* position){
+    Node* node_left = GetFunction(string, position);
+    while (string[*position] == '*' || string[*position] == '/'){
+        int oper = string[*position];
+        (*position)++;
+        Node* node_right = GetFunction(string, position);
+        Value_Type value = {};
+        value.arithmop.operand     = GetOperand((char)oper);
+        value.arithmop.operand_num = GetOperandNum((char)oper);
+        return InitNewNode(OPERAND, value, node_left, node_right);
+    }
+    return node_left;
+}
+
+Node* GetP(const char* string, size_t* position){
+    if (string[*position] == '('){
+        (*position)++;
+        Node* node = GetE(string, position);
+        if (string[*position] != ')')
+            SyntaxError(__FILE__, __LINE__);
+        (*position)++;
+        return node;
+    }
+    else
+        return GetN(string, position);
+}
+
+Node* GetPower(const char* string, size_t* position){
+    Node* node_left = GetP(string, position);
+    if (string[*position] == '^'){
+        (*position)++;
+        Node* node_right = GetP(string, position);
+        Value_Type value = {};
+        value.arithmop.operand     = POW;
+        value.arithmop.operand_num = POW_N;
+        return InitNewNode(OPERAND, value, node_left, node_right);
+    }
+
+    return node_left;
+}
+
+Node* GetFunction(const char* string, size_t* position){
+    Value_Type value = {};
+    if (strncmp(string + *position, "sin", strlen("sin")) == 0){
+        position += (int)(strlen("sin"));
+        value.funciton.func = SIN;
+        value.funciton.func_num = SIN_ALG;
+        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+    }
+    else if (strncmp(string + *position, "cos", strlen("cos")) == 0){
+        position += (int)(strlen("cos"));
+        value.funciton.func = COS;
+        value.funciton.func_num = COS_ALG;
+        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+    }
+    else if (strncmp(string + *position, "tan", strlen("tan")) == 0){
+        position += (int)(strlen("tan"));
+        value.funciton.func = TAN;
+        value.funciton.func_num = TAN_ALG;
+        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+    }
+    else if (strncmp(string + *position, "ln", strlen("ln")) == 0){
+        position += (int)(strlen("ln"));
+        value.funciton.func = LN;
+        value.funciton.func_num = LN_ALG;
+        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+    }
+    else {
+        return GetPower(string, position);
+    }
+}
+
+Node* GetN(const char* string, size_t* position){
+    Value_Type value = {};
+    fprintf(stderr, "GetN input: %s\n", string + *position);
+    if (isalpha(string[*position])) {
+        value.varaible = string[*position];
+        (*position)++;
+        fprintf(stderr, "!zalupa\n");
+        if (isalpha(string[*position]))
+            SyntaxError(__FILE__, __LINE__);
+
+        return InitNewNode(VARIABLE, value, nullptr, nullptr);
+    }
+    double val       = 0;
+    int counter      = 0;
+    int flag_double  = 0;
+    size_t old_position = *position;
+    while (IsConst(string[*position])){
+        if (flag_double)
+            counter++;
+        if (string[*position] == '.')
+            flag_double = 1;
+        else
+            val = val * 10 + (string[*position] - '0');
+
+        (*position)++;
+    }
+    if (old_position == *position)
+        SyntaxError(__FILE__, __LINE__);
+    val /= pow(10, counter);
+
+    value.number = val;
+    return InitNewNode(CONST, value, nullptr, nullptr);
+}
+
+
+void SyntaxError(const char* file, const size_t line){
+    fprintf(stderr, "%s:%lu\n", file, line);
+    assert(0);
+    return;
 }

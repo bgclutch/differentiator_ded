@@ -31,8 +31,7 @@ Tree_Errors insert(Node* node, NodeElem_t elem);
 
 Tree_Errors init_free_node(Node* node, const NodeElem_t elem, const NodeElem_t comp_elem, int* node_counter);
 
-Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin,
-                      Variable_Array_St* variable_array_st);
+Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin);
 
 void tree_branch_dtor(Node* node, const char* data, const size_t len);
 

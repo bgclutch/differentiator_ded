@@ -215,7 +215,7 @@ void close_file_html(const char* filename)
 }
 
 
-void print_data_string(const Value_Type* value, const Data_Type data_type, const size_t data_size, FILE* dump_file)
+void print_data_string(const Value_Type* value, const Data_Type data_type, FILE* dump_file)
 {
     assert(dump_file);
 
@@ -228,10 +228,10 @@ void print_data_string(const Value_Type* value, const Data_Type data_type, const
         fprintf(dump_file, "%lg", value->number);
         break;
     case VARIABLE:
-        fprintf(dump_file , "%c", value->varaible.var);
+        fprintf(dump_file , "%c", value->varaible);
         break;
     case FUNCTION:
-        fprintf(dump_file, "%.*s", (int)data_size, value->funciton.func);
+        fprintf(dump_file, "%s", value->funciton.func);
         break;
     case SYNTAXERROR:
         assert(0);
@@ -277,7 +277,7 @@ void print_to_dump_file(const Node* node, FILE* dump_file, const Colors color)
     fprintf(dump_file, "<tr><td colspan=\"2\">Data Type: %s</td></tr>\n"
                        "<tr><td colspan=\"2\">", GetDataType(node));
 
-    print_data_string(&node->value, node->data_type, node->data_size, dump_file);
+    print_data_string(&node->value, node->data_type, dump_file);
 
     fprintf(dump_file, "</td></tr>\n"
                        "<tr><td align = \"center\" >Left:%p</td><td align = \"center\" >Right:%p</td></tr></table>>];\n\n",

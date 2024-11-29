@@ -7,72 +7,6 @@
 #include "../lib_buffer_proc/buffer.h"
 #include "../lib_file_proc/file.h"
 
-void CtorVariablesArray(Variable_Array_St* variable_array_st){
-    variable_array_st->capacity = sizeof(short);
-    variable_array_st->size = 0;
-    variable_array_st->var_array = (Variable*)calloc(sizeof(Variable), variable_array_st->capacity);
-
-    AddVariableToArray('x', variable_array_st);
-    AddVariableToArray('y', variable_array_st);
-}
-
-
-void AddVariableToArray(const char new_variable, Variable_Array_St* variable_array_st){
-    variable_array_st->var_array = VarArrayReallocation(variable_array_st);
-    variable_array_st->var_array[variable_array_st->size].var     = new_variable;
-    variable_array_st->var_array[variable_array_st->size].var_num = (int)variable_array_st->size;
-    variable_array_st->size++;
-}
-
-
-void DtorVariablesArray(Variable_Array_St* variable_array_st){
-    free(variable_array_st->var_array);
-}
-
-
-Variable* VarArrayReallocation(Variable_Array_St* variable_array_st){
-    if (variable_array_st->capacity == variable_array_st->size){
-        size_t new_capacity = variable_array_st->capacity * VAR_ARRAY_SCALE_COEF;
-        Variable* new_var_array = (Variable*)realloc(variable_array_st->var_array, new_capacity);
-
-        if (!new_var_array){
-            fprintf(stderr, "nullptr was returned in VarArrayReallocation\n");
-            return variable_array_st->var_array;
-        }
-        variable_array_st->capacity = new_capacity;
-        return new_var_array;
-    }
-
-    return variable_array_st->var_array;
-}
-
-
-Data_Type GetNodeType(const char* arg_begin, const size_t arg_size){
-    fprintf(stderr, "argument:"RED_TEXT("%.*s")"\nargsize:%lu\n", (int)arg_size, arg_begin, arg_size);
-    if (IsOperand(*arg_begin)){
-        return OPERAND;
-    }
-    else if (IsConst(arg_begin, arg_size)){
-        return CONST;
-    }
-    else if (IsFunction(arg_begin, arg_size)){
-        return FUNCTION;
-    }
-    else{
-        return VARIABLE;
-    }
-}
-
-
-size_t GetTokenDataSize(char* arg_begin){
-    size_t size = 0;
-
-    for(int i = 0; arg_begin[i] != ')'; i++)
-        size++;
-
-    return size;
-}
-
 
 int IsOperand(const char argument){
     int result = 0;
@@ -92,20 +26,11 @@ int IsOperand(const char argument){
 }
 
 
-int IsConst(const char* argument, const size_t arg_size){
-    int result = 1;
-    for(size_t i = 0; i < arg_size; i++)
-    {
-        fprintf(stderr,GREEN_TEXT("%c"), argument[i]);
-        if(!isdigit(argument[i]) && argument[i] != '.' && argument[i] != '-'){
-            result = 0;
-            break;
-        }
-    }
+int IsConst(char argument){
+    if(!isdigit(argument) && argument != '.')
+        return 0;
 
-    fprintf(stderr, "\n");
-
-    return result;
+    return 1;
 }
 
 
@@ -127,6 +52,22 @@ int IsFunction(const char* argument, const size_t arg_size){
 
 }
 
+#if 0
+Data_Type GetNodeType(const char* arg_begin, const size_t arg_size){
+    if (IsOperand(*arg_begin)){
+        return OPERAND;
+    }
+    else if (IsConst(*arg_begin)){
+        return CONST;
+    }
+    else if (IsFunction(arg_begin, arg_size)){
+        return FUNCTION;
+    }
+    else{
+        return VARIABLE;
+    }
+}
+
 
 int IsVariableExists(const char var, const Variable_Array_St variable_array_st){
     for(size_t i = 0; i < variable_array_st.size; i++){
@@ -138,8 +79,7 @@ int IsVariableExists(const char var, const Variable_Array_St variable_array_st){
 }
 
 
-Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const char* argument,
-                        Variable_Array_St* variable_array_st){
+Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const char* argument){
     Value_Type value = {};
     switch (data_type){
         case VARIABLE:
@@ -172,17 +112,7 @@ Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const
 
     return value;
 }
-
-
-int FindVarNum(const char var, const Variable_Array_St variable_array_st){
-    for(size_t i = 0; i < variable_array_st.size; i++){
-        if (var == variable_array_st.var_array[i].var)
-            return variable_array_st.var_array[i].var_num;
-    }
-
-    return -1;
-}
-
+#endif
 
 char GetOperand(const char argument){
     if (argument == ADD)

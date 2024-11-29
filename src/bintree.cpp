@@ -38,6 +38,7 @@ void elem_dtor(void* elem)
 }
 
 
+#if 0
 Tree_Errors  node_init(Node** node, const size_t elem_size, const char* arg_begin,
                       Variable_Array_St* variable_array_st)
 {
@@ -48,7 +49,6 @@ Tree_Errors  node_init(Node** node, const size_t elem_size, const char* arg_begi
     new_node->right = nullptr;
 
     new_node->data_type = GetNodeType(arg_begin, elem_size);
-    fprintf(stderr, "data:"BLUE_TEXT("%.*s")"\ndatatype:%d\n\n", (int)elem_size, arg_begin, new_node->data_type);
     new_node->value     = GetNodeValue(new_node->data_type, elem_size, arg_begin, variable_array_st);
 
     *node = new_node;
@@ -63,7 +63,6 @@ Tree_Errors  node_init(Node** node, const size_t elem_size, const char* arg_begi
     return NODE_IS_OKAY;
 }
 
-#if 0
 Tree_Errors init_free_node(Node* node, const NodeElem_t elem, const NodeElem_t comp_elem, int* node_counter)
 {
     assert(node);

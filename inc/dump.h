@@ -64,7 +64,7 @@ void fill_file_with_data(FILE* graph_dump_file, Node* node);
 
 void fill_file_with_null(FILE* graph_dump_file, void* node);
 
-void print_data_string(const Value_Type* value, const Data_Type data_type, const size_t data_size, FILE* dump_file);
+void print_data_string(const Value_Type* value, const Data_Type data_type, FILE* dump_file);
 
 void print_to_dump_file(const Node* node, FILE* dump_file, const Colors color);
 
