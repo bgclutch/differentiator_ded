@@ -72,7 +72,10 @@ void fill_dot_file(Node* root, FILE* dotfile)
 
 void put_node_to_dot_file(FILE* dotfile, Node* node)
 {
-    fill_file_with_data(dotfile, node);
+    if (node)
+        fill_file_with_data(dotfile, node);
+    else
+        return;
 
     fprintf(dotfile, "\"%p\" -> \"%p\";\n", node->parent, node);
 
