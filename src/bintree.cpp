@@ -9,17 +9,41 @@
 #include "../../lib_buffer_proc/buffer.h"
 #include "../inc/colorised_output.h"
 
-void elem_ctor(void** elem, const size_t size)
-{
-    *elem = calloc(size, sizeof(char));
+Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // NOTE value given as a struct!
+    Node* new_node = (Node*)calloc(sizeof(Node), 1);
+    switch (data_type) {
+    case VARIABLE:
+        new_node->data_type = VARIABLE;
+        break;
 
-    assert(*elem);
-}
+    case CONST:
+        new_node->data_type = CONST;
+        break;
 
-void elem_dtor(void* elem)
-{
-    free(elem);
-    elem = nullptr;
+    case OPERAND:
+        new_node->data_type = OPERAND;
+        break;
+
+    case FUNCTION:
+        new_node->data_type = FUNCTION;
+        break;
+
+    case SYNTAXERROR: // not good
+        assert(0);
+
+    default:
+        assert(0);
+    }
+
+    new_node->value = value;
+    new_node->left  = left;
+    new_node->right = right;
+    if (left)
+        left->parent = new_node;
+    if (right)
+        right->parent = new_node;
+
+    return new_node;
 }
 
 
@@ -54,4 +78,36 @@ void tree_branch_dtor(Node* node, const char* data, const size_t len)
     free(node);
 
     return;
+}
+
+Value_Type GetValue(const Data_Type data_type, const int op_num, const char variable,
+                    const int func_num, const double number)
+{
+    Value_Type value = {};
+    switch(data_type) {
+        case VARIABLE:
+            value.varaible = variable;
+            break;
+
+        case CONST:
+            assert(!isnan(number));
+            value.number = number;
+            break;
+
+        case OPERAND:
+            value.arithmop = operand_array[op_num]; // NOTE struct array!!!
+            break;
+
+        case FUNCTION:
+            value.funciton = func_array[func_num]; // NOTE struct array!!!
+            break;
+
+        case SYNTAXERROR:
+            assert(0);
+
+        default:
+            assert(0);
+    }
+
+    return value;
 }

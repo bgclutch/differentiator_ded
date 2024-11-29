@@ -37,4 +37,6 @@ enum Text_Colors
 
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
 
+Node* CopyNode(Node* node);
+
 #endif // AKINATOR_H_

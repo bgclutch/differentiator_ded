@@ -6,9 +6,14 @@
 #include "../inc/dump.h"
 #include "../inc/treeRW.h"
 
-int main(void)
+int main(const int argc, const char* argv[])
 {
-    Tree tree = tree_ctor();
+    if (argc < 2){
+        fprintf(stderr, "please, input your file in format:'*.txt'\n"
+                        "program aborted\n");
+        return EXIT_FAILURE;
+    }
+    Tree tree = tree_ctor(argv[1]);
     Dump_St dump_st = {};
     create_png(&dump_st, tree.root);
     tree_dtor(&tree);

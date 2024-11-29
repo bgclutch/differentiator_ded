@@ -25,23 +25,19 @@ enum Tree_Errors
 
 };
 
-const char* const DATABASE = "database.txt";
+#define OPERVALUE(data_type,    index) GetValue(data_type, index,        0,     0,     NAN)
+#define VARVALUE(data_type, variable)  GetValue(data_type,     0, variable,     0,     NAN)
+#define FUNCVALUE(data_type,    index) GetValue(data_type,     0,        0, index,     NAN)
+#define CONSTVALUE(data_type,  number) GetValue(data_type,     0,        0,     0,  number)
 
-Tree_Errors insert(Node* node, NodeElem_t elem);
-
-Tree_Errors init_free_node(Node* node, const NodeElem_t elem, const NodeElem_t comp_elem, int* node_counter);
-
-Tree_Errors node_init(Node** node, const size_t elem_size, const char* arg_begin);
 
 void tree_branch_dtor(Node* node, const char* data, const size_t len);
 
 Tree_Errors tree_is_err(const Tree_Errors result, const char* name, const size_t line);
 
-void tree_print(Node* node);
+Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right);
 
-void elem_ctor(void** elem, const size_t size);
-
-void elem_dtor(void* elem);
-
+Value_Type GetValue(const Data_Type data_type, const int op_num, const char variable,
+                    const int func_num, const double number);
 
 #endif // BINTREE_H_

@@ -43,8 +43,6 @@ int IsFunction(const char* argument, const size_t arg_size){
         result = 1;
     else if (strncmp(argument, TAN, arg_size) == 0)
         result = 1;
-    else if (strncmp(argument, COT, arg_size) == 0)
-        result = 1;
     else if (strncmp(argument, LN, arg_size) == 0)
         result = 1;
 
@@ -70,15 +68,15 @@ char GetOperand(const char argument){
 
 Operand_Num GetOperandNum(const char argument){
     if (argument == ADD)
-        return ADD_N;
+        return ADD_NUM;
     else if (argument == SUB)
-        return SUB_N;
+        return SUB_NUM;
     else if (argument == MUL)
-        return MUL_N;
+        return MUL_NUM;
     else if (argument == DIV)
-        return DIV_N;
+        return DIV_NUM;
     else if (argument == POW)
-        return POW_N;
+        return POW_NUM;
 
     return SYNTERR_N; // error exit
 }
@@ -91,8 +89,6 @@ const char* GetAlgFunc(const char* argument, const size_t arg_size){
         return COS;
     else if (!strncmp(argument, TAN, arg_size))
         return TAN;
-    else if (!strncmp(argument, COT, arg_size))
-        return COT;
     else if (!strncmp(argument, LN, arg_size))
         return LN;
     else
@@ -102,15 +98,13 @@ const char* GetAlgFunc(const char* argument, const size_t arg_size){
 
 Algebra_Func_Num GetAlgFuncNum(const char* argument, const size_t arg_size){
     if (!strncmp(argument, SIN, arg_size)) // FIXME if there were array of structs there will be less copypaste???
-        return SIN_ALG;
+        return SIN_NUM;
     else if (!strncmp(argument, COS, arg_size))
-        return COS_ALG;
+        return COS_NUM;
     else if (!strncmp(argument, TAN, arg_size))
-        return TAN_ALG;
-    else if (!strncmp(argument, COT, arg_size))
-        return COT_ALG;
+        return TAN_NUM;
     else if (!strncmp(argument, LN, arg_size))
-        return LN_ALG;
+        return LN_NUM;
     else
-        return SYNTERR_ALG; // error exit
+        return SYNTERR_NUM; // error exit
 }

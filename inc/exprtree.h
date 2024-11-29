@@ -4,12 +4,12 @@
 #include <math.h>
 
 enum Operand_Num{ // maybe struct array too?
-    SYNTERR_N = -1,
-    ADD_N     =  1,
-    SUB_N     =  2,
-    MUL_N     =  3,
-    DIV_N     =  4,
-    POW_N     =  5,
+    SYNTERR_N   = -1,
+    ADD_NUM     =  0,
+    SUB_NUM     =  1,
+    MUL_NUM     =  2,
+    DIV_NUM     =  3,
+    POW_NUM     =  4,
 };
 
 struct Operand{
@@ -18,13 +18,13 @@ struct Operand{
 };
 
 enum Algebra_Func_Num{ // maybe struct array too?
-    SYNTERR_ALG = -1,
-    SIN_ALG     =  1,
-    COS_ALG     =  2,
-    TAN_ALG     =  3,
-    COT_ALG     =  4,
-    LN_ALG      =  5,
+    SYNTERR_NUM = -1,
+    SIN_NUM     =  0,
+    COS_NUM     =  1,
+    TAN_NUM     =  2,
+    LN_NUM      =  3,
 };
+
 
 struct Algebra_Func{
     const char*          func;
@@ -39,11 +39,11 @@ struct Value_Type{
 };
 
 enum Data_Type{
-    SYNTAXERROR = 0,
-    VARIABLE    = 1,
-    CONST       = 2,
-    OPERAND     = 3,
-    FUNCTION    = 4,
+    SYNTAXERROR = -1,
+    VARIABLE    =  0,
+    CONST       =  1,
+    OPERAND     =  2,
+    FUNCTION    =  3,
 };
 
 struct Node{
@@ -56,9 +56,8 @@ struct Node{
 
 struct Tree
 {
-    Node* root; // ctor elem && dtor elem
+    Node* root;
     char* buffer;
-    // tree size
 };
 
 static const char ADD = '+'; // maybe struct array too?
@@ -70,11 +69,18 @@ static const char POW = '^';
 static const char* const SIN = "sin"; // maybe struct array too?
 static const char* const COS = "cos";
 static const char* const TAN = "tan";
-static const char* const COT = "cot";
 static const char* const LN  = "ln";
 
-static const size_t VAR_ARRAY_SCALE_COEF = 2;
+const Algebra_Func func_array[] = {{SIN, SIN_NUM},
+                                   {COS, COS_NUM},
+                                   {TAN, TAN_NUM},
+                                   {LN, LN_NUM}};
 
+const Operand operand_array[]   = {{ADD, ADD_NUM},
+                                   {SUB, SUB_NUM},
+                                   {MUL, MUL_NUM},
+                                   {DIV, DIV_NUM},
+                                   {POW, POW_NUM}};
 
 enum Tree_Err
 {

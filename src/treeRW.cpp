@@ -10,15 +10,14 @@
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../lib_file_proc/file.h"
 
-
-Differ_Err create_data_buffer(char** buffer, size_t* buffer_size)
+Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* database)
 {
     assert(!*buffer);
     assert(buffer_size);
 
     FILE* buffer_file = nullptr;
 
-    if(file_read_open(&buffer_file, DATABASE) != ALL_GOOD_RET_F)
+    if(file_read_open(&buffer_file, database) != ALL_GOOD_RET_F)
         return DIFFER_BUFFER_FILE_OPEN_ERR;
 
     *buffer_size = symbols_number(buffer_file);
@@ -40,13 +39,13 @@ Differ_Err create_data_buffer(char** buffer, size_t* buffer_size)
 }
 
 
-Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree) {
+Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
     assert(tree);
 
     size_t buffer_size = 0;
     char* buffer = nullptr;
 
-    if(create_data_buffer(&buffer, &buffer_size) != DIFFER_IS_OKAY)
+    if(create_data_buffer(&buffer, &buffer_size, database) != DIFFER_IS_OKAY)
     {
         free(buffer);
         return DIFFER_BUFFER_CTOR_ERR;
@@ -120,48 +119,8 @@ void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Arra
     }
     return;
 }
-#endif
 
 
-Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // NOTE value given as a struct!
-    Node* new_node = (Node*)calloc(sizeof(Node), 1);
-    switch (data_type) {
-    case VARIABLE:
-        new_node->data_type = VARIABLE;
-        break;
-
-    case CONST:
-        new_node->data_type = CONST;
-        break;
-
-    case OPERAND:
-        new_node->data_type = OPERAND;
-        break;
-
-    case FUNCTION:
-        new_node->data_type = FUNCTION;
-        break;
-
-    case SYNTAXERROR: // not good
-        assert(0);
-
-    default:
-        assert(0);
-    }
-
-    new_node->value = value;
-    new_node->left  = left;
-    new_node->right = right;
-    if (left)
-        left->parent = new_node;
-    if (right)
-        right->parent = new_node;
-
-    return new_node;
-}
-
-
-#if 0
 Differ_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
 {
     assert(node);
@@ -240,10 +199,10 @@ void write_nodes_to_file(Node* node, FILE* file)
 #endif
 
 
-Tree tree_ctor()
+Tree tree_ctor(const char* database)
 {
     Tree tree = {};
-    ReadTreeFromFileWithRecDescent(&tree);
+    ReadTreeFromFileWithRecDescent(&tree, database);
 
     return tree;
 }
@@ -278,10 +237,7 @@ Node* GetE(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetT(string, position);
-        Value_Type value = {};
-        value.arithmop.operand     = GetOperand((char)oper);
-        value.arithmop.operand_num = GetOperandNum((char)oper);
-        return InitNewNode(OPERAND, value, node_left, node_right);
+        return InitNewNode(OPERAND, OPERVALUE(OPERAND, GetOperandNum((char)oper)), node_left, node_right); // put GetValue here
     }
 
     return node_left;
@@ -293,10 +249,7 @@ Node* GetT(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetFunction(string, position);
-        Value_Type value = {};
-        value.arithmop.operand     = GetOperand((char)oper);
-        value.arithmop.operand_num = GetOperandNum((char)oper);
-        return InitNewNode(OPERAND, value, node_left, node_right);
+        return InitNewNode(OPERAND, OPERVALUE(OPERAND, GetOperandNum((char)oper)), node_left, node_right);
     }
     return node_left;
 }
@@ -319,40 +272,28 @@ Node* GetPower(const char* string, size_t* position){
     if (string[*position] == '^'){
         (*position)++;
         Node* node_right = GetP(string, position);
-        Value_Type value = {};
-        value.arithmop.operand     = POW;
-        value.arithmop.operand_num = POW_N;
-        return InitNewNode(OPERAND, value, node_left, node_right);
+        return InitNewNode(OPERAND, OPERVALUE(OPERAND, POW_NUM), node_left, node_right);
     }
 
     return node_left;
 }
 
 Node* GetFunction(const char* string, size_t* position){
-    Value_Type value = {};
     if (strncmp(string + *position, "sin", strlen("sin")) == 0){
         (*position) += strlen("sin");
-        value.funciton.func = SIN;
-        value.funciton.func_num = SIN_ALG;
-        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, SIN_NUM), nullptr, GetPower(string, position));
     }
     else if (strncmp(string + *position, "cos", strlen("cos")) == 0){
         (*position) += strlen("cos");
-        value.funciton.func = COS;
-        value.funciton.func_num = COS_ALG;
-        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, COS_NUM), nullptr, GetPower(string, position));
     }
     else if (strncmp(string + *position, "tan", strlen("tan")) == 0){
         (*position) += strlen("tan");
-        value.funciton.func = TAN;
-        value.funciton.func_num = TAN_ALG;
-        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, TAN_NUM), nullptr, GetPower(string, position));
     }
     else if (strncmp(string + *position, "ln", strlen("ln")) == 0){
         (*position) += strlen("ln");
-        value.funciton.func = LN;
-        value.funciton.func_num = LN_ALG;
-        return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
+        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, LN_NUM), nullptr, GetPower(string, position));
     }
     else {
         return GetPower(string, position);
@@ -360,14 +301,13 @@ Node* GetFunction(const char* string, size_t* position){
 }
 
 Node* GetN(const char* string, size_t* position){
-    Value_Type value = {};
     if (isalpha(string[*position])) {
-        value.varaible = string[*position];
+        char variable = string[*position];
         (*position)++;
         if (isalpha(string[*position]))
             SyntaxError(__FILE__, __LINE__);
 
-        return InitNewNode(VARIABLE, value, nullptr, nullptr);
+        return InitNewNode(VARIABLE, VARVALUE(VARIABLE, variable), nullptr, nullptr);
     }
     double val       = 0;
     int counter      = 0;
@@ -386,9 +326,7 @@ Node* GetN(const char* string, size_t* position){
     if (old_position == *position)
         SyntaxError(__FILE__, __LINE__);
     val /= pow(10, counter);
-
-    value.number = val;
-    return InitNewNode(CONST, value, nullptr, nullptr);
+    return InitNewNode(CONST, CONSTVALUE(CONST, val), nullptr, nullptr);
 }
 
 
