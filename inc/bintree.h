@@ -25,7 +25,7 @@ enum Tree_Errors
 
 };
 
-const char* const DATABASE = "database2.txt";
+const char* const DATABASE = "database.txt";
 
 Tree_Errors insert(Node* node, NodeElem_t elem);
 

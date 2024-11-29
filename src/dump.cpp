@@ -49,9 +49,21 @@ void graphic_dump(Node* root, Dump_St* General_Dump)
 
 void fill_dot_file(Node* root, FILE* dotfile)
 {
+    if(root->left){
+        put_node_to_dot_file(dotfile, root->left);
+    }
+    else{
+        fill_file_with_null(dotfile, &root->left);
+        fprintf(dotfile, "\"%p\" -> \"%p\";\n", root, &root->left);
+    }
+    if(root->right){
+        put_node_to_dot_file(dotfile, root->right);
+    }
+    else{
+        fill_file_with_null(dotfile, &root->right);
+        fprintf(dotfile, "\"%p\" -> \"%p\";\n", root, &root->right);
 
-    put_node_to_dot_file(dotfile, root->left);
-    put_node_to_dot_file(dotfile, root->right);
+    }
 
     fill_file_with_data(dotfile, root);
 
@@ -64,11 +76,13 @@ void put_node_to_dot_file(FILE* dotfile, Node* node)
 
     fprintf(dotfile, "\"%p\" -> \"%p\";\n", node->parent, node);
 
-    if(!node->left && !node->right)
+    if(!node->left)
     {
         fprintf(dotfile, "\"%p\" -> \"%p\";\n", node, &node->left);
         fill_file_with_null(dotfile, &node->left);
-
+    }
+    if(!node->right)
+    {
         fprintf(dotfile, "\"%p\" -> \"%p\";\n", node, &node->right);
         fill_file_with_null(dotfile, &node->right);
 

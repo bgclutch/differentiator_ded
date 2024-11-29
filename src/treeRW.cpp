@@ -240,6 +240,7 @@ Tree tree_ctor()
 {
     Tree tree = {};
     ReadTreeFromFileWithRecDescent(&tree);
+    AddParentsToAllNodes(tree.root);
 
     return tree;
 }
@@ -262,7 +263,6 @@ Node* RecursiveDecent(const char* string, size_t* position){
 Node* GetG(const char* string, size_t* position) {
     Node* node = GetE(string, position);
     if (string[*position] != '\0'){
-        fprintf(stderr, "GetG err: %s\n", string + (*position));
         SyntaxError(__FILE__, __LINE__);
     }
     (*position)++;
@@ -274,7 +274,6 @@ Node* GetE(const char* string, size_t* position){
     while (string[*position] == '+' || string[*position] == '-'){
         int oper = string[*position];
         (*position)++;
-        fprintf(stderr, "GetE: %c\n", string[*position]);
         Node* node_right = GetT(string, position);
         Value_Type value = {};
         value.arithmop.operand     = GetOperand((char)oper);
@@ -329,25 +328,25 @@ Node* GetPower(const char* string, size_t* position){
 Node* GetFunction(const char* string, size_t* position){
     Value_Type value = {};
     if (strncmp(string + *position, "sin", strlen("sin")) == 0){
-        position += (int)(strlen("sin"));
+        (*position) += strlen("sin");
         value.funciton.func = SIN;
         value.funciton.func_num = SIN_ALG;
         return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
     }
     else if (strncmp(string + *position, "cos", strlen("cos")) == 0){
-        position += (int)(strlen("cos"));
+        (*position) += strlen("cos");
         value.funciton.func = COS;
         value.funciton.func_num = COS_ALG;
         return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
     }
     else if (strncmp(string + *position, "tan", strlen("tan")) == 0){
-        position += (int)(strlen("tan"));
+        (*position) += strlen("tan");
         value.funciton.func = TAN;
         value.funciton.func_num = TAN_ALG;
         return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
     }
     else if (strncmp(string + *position, "ln", strlen("ln")) == 0){
-        position += (int)(strlen("ln"));
+        (*position) += strlen("ln");
         value.funciton.func = LN;
         value.funciton.func_num = LN_ALG;
         return InitNewNode(FUNCTION, value, nullptr, GetPower(string, position));
@@ -359,11 +358,9 @@ Node* GetFunction(const char* string, size_t* position){
 
 Node* GetN(const char* string, size_t* position){
     Value_Type value = {};
-    fprintf(stderr, "GetN input: %s\n", string + *position);
     if (isalpha(string[*position])) {
         value.varaible = string[*position];
         (*position)++;
-        fprintf(stderr, "!zalupa\n");
         if (isalpha(string[*position]))
             SyntaxError(__FILE__, __LINE__);
 
@@ -395,5 +392,18 @@ Node* GetN(const char* string, size_t* position){
 void SyntaxError(const char* file, const size_t line){
     fprintf(stderr, "%s:%lu\n", file, line);
     assert(0);
+    return;
+}
+
+
+void AddParentsToAllNodes(Node* node){
+    if (node->left != nullptr && node->right != nullptr){
+        node->left->parent  = node;
+        AddParentsToAllNodes(node->left);
+    }
+    if (node->right != nullptr){
+        node->right->parent = node;
+        AddParentsToAllNodes(node->right);
+    }
     return;
 }

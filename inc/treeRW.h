@@ -39,4 +39,6 @@ Node* GetFunction(const char*, size_t*);
 
 void SyntaxError(const char* file, const size_t line);
 
+void AddParentsToAllNodes(Node* node);
+
 #endif // TREERW_H_

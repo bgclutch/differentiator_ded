@@ -1,1 +1,0 @@
-(division (plus (12)(x))(subdivision (23)(8)))
