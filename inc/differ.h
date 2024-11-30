@@ -33,20 +33,28 @@ enum Text_Colors
     YELLOWTEXT,
 };
 
-#define GETVARNODE(variable)               InitNewNode(VARIABLE,  VARVALUE(VARIABLE, variable),  nullptr, nullptr)
-#define GETCONSTNODE(value)                InitNewNode(CONST,     CONSTVALUE(CONST, value),      nullptr, nullptr)
-#define GETOPERNODE(oper_num, left, right) InitNewNode(OPERAND,   OPERVALUE(OPERAND, oper_num),     left,   right)
-#define GETFUNCNODE(func_num, right)       InitNewNode(FUNCTION,  FUNCVALUE(FUNCTION, func_num), nullptr,   right)
+#define GETVARNODE(  variable)              InitNewNode(VARIABLE,  VARVALUE(VARIABLE, variable),  nullptr, nullptr)
+#define GETCONSTNODE(value)                 InitNewNode(CONST,     CONSTVALUE(CONST, value),      nullptr, nullptr)
+#define GETOPERNODE( oper_num, left, right) InitNewNode(OPERAND,   OPERVALUE(OPERAND, oper_num),     left,   right)
+#define GETFUNCNODE( func_num, right)       InitNewNode(FUNCTION,  FUNCVALUE(FUNCTION, func_num), nullptr,   right)
 
 
-#define GETDIFFADDNODE(left, right)                GETOPERNODE(ADD_NUM, Differentiation(left), Differentiation(right))
-#define GETDIFFSUBNODE(left, right)                GETOPERNODE(SUB_NUM, Differentiation(left), Differentiation(right))
-#define GETDIFFMULNODE(left, cleft, right, cright) GETOPERNODE(ADD_NUM, GETOPERNODE(MUL_NUM, Differentiation(left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(right)))
-#define GETDIFFDIVNODE(left, cleft, right, cright) GETOPERNODE(DIV, GETOPERNODE(SUB, GETOPERNODE(MUL_NUM, Differentiation(left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(right))), GETOPERNODE(POW_NUM, right, GETCONSTNODE(2)))
+#define GETDIFFVARNODE(  node, variable)              ChangeNode(node, VARIABLE,  VARVALUE(VARIABLE, variable),  nullptr, nullptr)
+#define GETDIFFCONSTNODE(node, value)                 ChangeNode(node, CONST,     CONSTVALUE(CONST, value),      nullptr, nullptr)
+#define GETDIFFOPERNODE( node, oper_num, left, right) ChangeNode(node, OPERAND,   OPERVALUE(OPERAND, oper_num),     left,   right)
+#define GETDIFFFUNCNODE( node, func_num, right)       ChangeNode(node, FUNCTION,  FUNCVALUE(FUNCTION, func_num), nullptr,   right)
+
+
+#define GETDIFFADDNODE(node)                GETDIFFOPERNODE(node, ADD_NUM, Differentiation(node->left), Differentiation(node->right))
+#define GETDIFFSUBNODE(node)                GETDIFFOPERNODE(node, SUB_NUM, Differentiation(node->left), Differentiation(node->right))
+#define GETDIFFMULNODE(node, cleft, cright) GETDIFFOPERNODE(node, ADD_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right)))
+#define GETDIFFDIVNODE(node, cleft, cright) GETDIFFOPERNODE(node, DIV_NUM, GETOPERNODE(SUB, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right))), GETOPERNODE(POW_NUM, cright, GETCONSTNODE(2)))
 
 
 
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
+
+Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right);
 
 Node* Differentiation(Node* node);
 

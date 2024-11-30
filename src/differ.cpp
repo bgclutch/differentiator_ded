@@ -77,23 +77,59 @@ Node* Differentiation(Node* node) {
 
 
 Node* AddDiff(Node* node) {
-    return GETDIFFADDNODE(node->left, node->right);
+    return GETDIFFADDNODE(node);
 }
 
 Node* SubDiff(Node* node) {
-    return GETDIFFSUBNODE(node->left, node->right);
+    return GETDIFFSUBNODE(node);
 }
 
 Node* MulDiff(Node* node) {
-    Node* cleft  = node->left;
-    Node* cright = node->right; // FIXME FIXPLS with DSL here-----v
-    return GETDIFFMULNODE(node->left, cleft, node->right, cright);
+    Node* cleft  = CopyNode(node->left);
+    Node* cright = CopyNode(node->right);
+    return GETDIFFMULNODE(node, cleft, cright);
 }
 
 Node* DivDiff(Node* node) {
-    Node* cleft  = node->left;
-    Node* cright = node->right;
-    return GETDIFFDIVNODE(node->left, cleft, node->right, cright);
+    Node* cleft  = CopyNode(node->left);
+    Node* cright = CopyNode(node->right);
+    return GETDIFFDIVNODE(node, cleft, cright);
+}
+
+Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
+    switch (data_type) {
+    case VARIABLE:
+        node->data_type = VARIABLE;
+        break;
+
+    case CONST:
+        node->data_type = CONST;
+        break;
+
+    case OPERAND:
+        node->data_type = OPERAND;
+        break;
+
+    case FUNCTION:
+        node->data_type = FUNCTION;
+        break;
+
+    case SYNTAXERROR: // not good
+        assert(0);
+
+    default:
+        assert(0);
+    }
+
+    node->value = value;
+    node->left  = left;
+    node->right = right;
+    if (left)
+        left->parent  = node;
+    if (right)
+        right->parent = node;
+
+    return node;
 }
 
 #if 0
@@ -125,6 +161,7 @@ Node* DiffLeaf(Node* node) {
     if (node->data_type == CONST)
         node->value.number = 0;
     else if (node->data_type == VARIABLE){
+        node->data_type = CONST;
         node->value = CONSTVALUE(CONST, 1);
     }
 

@@ -25,10 +25,10 @@ enum Tree_Errors
 
 };
 
-#define OPERVALUE(data_type,    index) GetValue(data_type, index,        0,     0,     NAN)
-#define VARVALUE(data_type, variable)  GetValue(data_type,     0, variable,     0,     NAN)
-#define FUNCVALUE(data_type,    index) GetValue(data_type,     0,        0, index,     NAN)
-#define CONSTVALUE(data_type,  number) GetValue(data_type,     0,        0,     0,  number)
+#define OPERVALUE( data_type,    index) GetValue(data_type, index,        0,     0,     NAN)
+#define VARVALUE(  data_type, variable) GetValue(data_type,     0, variable,     0,     NAN)
+#define FUNCVALUE( data_type,    index) GetValue(data_type,     0,        0, index,     NAN)
+#define CONSTVALUE(data_type,   number) GetValue(data_type,     0,        0,     0,  number)
 
 
 void tree_branch_dtor(Node* node, const char* data, const size_t len);

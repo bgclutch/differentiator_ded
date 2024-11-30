@@ -9,7 +9,7 @@
 #include "../../lib_buffer_proc/buffer.h"
 #include "../inc/colorised_output.h"
 
-Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // NOTE value given as a struct!
+Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
     switch (data_type) {
     case VARIABLE:

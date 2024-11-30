@@ -232,23 +232,22 @@ Node* GetG(const char* string, size_t* position) {
 
 Node* GetE(const char* string, size_t* position){
     Node* node_left = GetT(string, position);
-    while (string[*position] == '+' || string[*position] == '-'){
+    while (string[*position] == ADD || string[*position] == SUB){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetT(string, position);
-        return GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
+        node_left = GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
     }
-
     return node_left;
 }
 
 Node* GetT(const char* string, size_t* position){
     Node* node_left = GetFunction(string, position);
-    while (string[*position] == '*' || string[*position] == '/'){
+    while (string[*position] == MUL || string[*position] == DIV){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetFunction(string, position);
-        return GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
+        node_left = GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
@@ -273,7 +272,6 @@ Node* GetPower(const char* string, size_t* position){
         Node* node_right = GetP(string, position);
         return GETOPERNODE(POW_NUM, node_left, node_right);
     }
-
     return node_left;
 }
 
@@ -308,9 +306,9 @@ Node* GetN(const char* string, size_t* position){
 
         return GETVARNODE(variable);
     }
-    double val       = 0;
-    int counter      = 0;
-    int flag_double  = 0;
+    double val          = 0;
+    int counter         = 0;
+    int flag_double     = 0;
     size_t old_position = *position;
     while (IsConst(string[*position])){
         if (flag_double)
