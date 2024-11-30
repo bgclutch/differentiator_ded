@@ -48,8 +48,7 @@ enum Text_Colors
 #define GETDIFFADDNODE(node)                GETDIFFOPERNODE(node, ADD_NUM, Differentiation(node->left), Differentiation(node->right))
 #define GETDIFFSUBNODE(node)                GETDIFFOPERNODE(node, SUB_NUM, Differentiation(node->left), Differentiation(node->right))
 #define GETDIFFMULNODE(node, cleft, cright) GETDIFFOPERNODE(node, ADD_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right)))
-#define GETDIFFDIVNODE(node, cleft, cright) GETDIFFOPERNODE(node, DIV_NUM, GETOPERNODE(SUB, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right))), GETOPERNODE(POW_NUM, cright, GETCONSTNODE(2)))
-
+#define GETDIFFDIVNODE(node, cleft, cright) GETDIFFOPERNODE(node, DIV_NUM, GETOPERNODE(SUB_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right))), GETOPERNODE(POW_NUM, CopyNode(cright), GETCONSTNODE(2)))
 
 
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
