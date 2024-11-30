@@ -217,7 +217,6 @@ void tree_dtor(Tree* tree)
 }
 
 
-
 Node* RecursiveDecent(const char* string, size_t* position){
     return GetG(string, position); // root
 }
@@ -237,7 +236,7 @@ Node* GetE(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetT(string, position);
-        return InitNewNode(OPERAND, OPERVALUE(OPERAND, GetOperandNum((char)oper)), node_left, node_right); // put GetValue here
+        return GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
     }
 
     return node_left;
@@ -249,7 +248,7 @@ Node* GetT(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetFunction(string, position);
-        return InitNewNode(OPERAND, OPERVALUE(OPERAND, GetOperandNum((char)oper)), node_left, node_right);
+        return GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
@@ -269,31 +268,31 @@ Node* GetP(const char* string, size_t* position){
 
 Node* GetPower(const char* string, size_t* position){
     Node* node_left = GetP(string, position);
-    if (string[*position] == '^'){
+    if (string[*position] == POW){
         (*position)++;
         Node* node_right = GetP(string, position);
-        return InitNewNode(OPERAND, OPERVALUE(OPERAND, POW_NUM), node_left, node_right);
+        return GETOPERNODE(POW_NUM, node_left, node_right);
     }
 
     return node_left;
 }
 
 Node* GetFunction(const char* string, size_t* position){
-    if (strncmp(string + *position, "sin", strlen("sin")) == 0){
-        (*position) += strlen("sin");
-        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, SIN_NUM), nullptr, GetPower(string, position));
+    if (strncmp(string + *position, SIN, strlen(SIN)) == 0){
+        (*position) += strlen(SIN);
+        return GETFUNCNODE(SIN_NUM, GetPower(string, position));
     }
-    else if (strncmp(string + *position, "cos", strlen("cos")) == 0){
-        (*position) += strlen("cos");
-        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, COS_NUM), nullptr, GetPower(string, position));
+    else if (strncmp(string + *position, COS, strlen(COS)) == 0){
+        (*position) += strlen(COS);
+        return GETFUNCNODE(COS_NUM, GetPower(string, position));
     }
-    else if (strncmp(string + *position, "tan", strlen("tan")) == 0){
-        (*position) += strlen("tan");
-        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, TAN_NUM), nullptr, GetPower(string, position));
+    else if (strncmp(string + *position, TAN, strlen(TAN)) == 0){
+        (*position) += strlen(TAN);
+        return GETFUNCNODE(TAN_NUM, GetPower(string, position));
     }
-    else if (strncmp(string + *position, "ln", strlen("ln")) == 0){
-        (*position) += strlen("ln");
-        return InitNewNode(FUNCTION, FUNCVALUE(FUNCTION, LN_NUM), nullptr, GetPower(string, position));
+    else if (strncmp(string + *position, LN, strlen(LN)) == 0){
+        (*position) += strlen(LN);
+        return GETFUNCNODE(LN_NUM, GetPower(string, position));
     }
     else {
         return GetPower(string, position);
@@ -307,7 +306,7 @@ Node* GetN(const char* string, size_t* position){
         if (isalpha(string[*position]))
             SyntaxError(__FILE__, __LINE__);
 
-        return InitNewNode(VARIABLE, VARVALUE(VARIABLE, variable), nullptr, nullptr);
+        return GETVARNODE(variable);
     }
     double val       = 0;
     int counter      = 0;
@@ -326,7 +325,7 @@ Node* GetN(const char* string, size_t* position){
     if (old_position == *position)
         SyntaxError(__FILE__, __LINE__);
     val /= pow(10, counter);
-    return InitNewNode(CONST, CONSTVALUE(CONST, val), nullptr, nullptr);
+    return GETCONSTNODE(val);
 }
 
 

@@ -1,6 +1,5 @@
-
-#ifndef AKINATOR_H_
-#define AKINATOR_H_
+#ifndef DIFFER_H_
+#define DIFFER_H_
 
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../lib_file_proc/file.h"
@@ -34,9 +33,33 @@ enum Text_Colors
     YELLOWTEXT,
 };
 
+#define GETVARNODE(variable)               InitNewNode(VARIABLE,  VARVALUE(VARIABLE, variable),  nullptr, nullptr)
+#define GETCONSTNODE(value)                InitNewNode(CONST,     CONSTVALUE(CONST, value),      nullptr, nullptr)
+#define GETOPERNODE(oper_num, left, right) InitNewNode(OPERAND,   OPERVALUE(OPERAND, oper_num),     left,   right)
+#define GETFUNCNODE(func_num, right)       InitNewNode(FUNCTION,  FUNCVALUE(FUNCTION, func_num), nullptr,   right)
+
+
+#define GETDIFFADDNODE(left, right)                GETOPERNODE(ADD_NUM, Differentiation(left), Differentiation(right))
+#define GETDIFFSUBNODE(left, right)                GETOPERNODE(SUB_NUM, Differentiation(left), Differentiation(right))
+#define GETDIFFMULNODE(left, cleft, right, cright) GETOPERNODE(ADD_NUM, GETOPERNODE(MUL_NUM, Differentiation(left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(right)))
+#define GETDIFFDIVNODE(left, cleft, right, cright) GETOPERNODE(DIV, GETOPERNODE(SUB, GETOPERNODE(MUL_NUM, Differentiation(left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(right))), GETOPERNODE(POW_NUM, right, GETCONSTNODE(2)))
+
+
 
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
 
+Node* Differentiation(Node* node);
+
+Node* AddDiff(Node* node);
+
+Node* SubDiff(Node* node);
+
+Node* MulDiff(Node* node);
+
+Node* DivDiff(Node* node);
+
 Node* CopyNode(Node* node);
 
-#endif // AKINATOR_H_
+Node* DiffLeaf(Node* node);
+
+#endif // DIFFER_H_

@@ -132,7 +132,7 @@ void fill_file_with_data(FILE* graph_dump_file, Node* node)
     assert(graph_dump_file);
     assert(node);
 
-    if(node->left == node->right)
+    if(!node->left && !node->right)
     {
         print_to_dump_file(node, graph_dump_file, LEAF_COLOR);
     }
@@ -143,6 +143,9 @@ void fill_file_with_data(FILE* graph_dump_file, Node* node)
     else if(node->parent == nullptr)
     {
         print_to_dump_file(node, graph_dump_file, ROOT_COLOR);
+    }
+    else{
+        assert(0);
     }
 }
 

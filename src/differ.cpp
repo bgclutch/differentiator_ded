@@ -33,21 +33,22 @@ Node* Differentiation(Node* node) {
     }
     else if (node->data_type == OPERAND){
         if (node->value.arithmop.operand == ADD){
-            node = AddDiff();
+            node = AddDiff(node);
         }
         else if (node->value.arithmop.operand == SUB){
-            node = SubDiff();
+            node = SubDiff(node);
         }
         else if (node->value.arithmop.operand == MUL){
-            node = MulDiff();
+            node = MulDiff(node);
         }
         else if (node->value.arithmop.operand == DIV){
-            node = DivDiff();
+            node = DivDiff(node);
         }
         else{
             assert(0);
         }
     }
+    #if 0
     else if (node->data_type == FUNCTION){
         if (node->value.funciton.func_num == SIN_NUM){
             node = SinDiff();
@@ -55,10 +56,10 @@ Node* Differentiation(Node* node) {
         else if (node->value.funciton.func_num == COS_NUM){
             node = CosDiff();
         }
-        else if (node->value.funciton.func_num == COS_NUM){
+        else if (node->value.funciton.func_num == TAN_NUM){
             node = TanDiff();
         }
-        else if (node->value.funciton.func_num == COS_NUM){
+        else if (node->value.funciton.func_num == LN_NUM){
             node = LogDiff();
         }
         else{
@@ -66,6 +67,7 @@ Node* Differentiation(Node* node) {
         }
 
     }
+    #endif
     else {
         assert(0);
     }
@@ -74,38 +76,27 @@ Node* Differentiation(Node* node) {
 }
 
 
-Node* AddDiff(Node* left, Node* right) {
-    Value_Type value = {};
-    value.arithmop.operand     = ADD;
-    value.arithmop.operand_num = ADD_NUM;
-    return InitNewNode(OPERAND, value, Differentiation(left), Differentiation(right)); // NOTE DSL HERE
+Node* AddDiff(Node* node) {
+    return GETDIFFADDNODE(node->left, node->right);
 }
 
-Node* SubDiff(Node* left, Node* right) {
-    Value_Type value = {};
-    value.arithmop.operand     = SUB;
-    value.arithmop.operand_num = SUB_NUM;
-    return InitNewNode(OPERAND, value, Differentiation(left), Differentiation(right));
+Node* SubDiff(Node* node) {
+    return GETDIFFSUBNODE(node->left, node->right);
 }
 
-Node* MulDiff() {
-    Value_Type value = {};
-    value.arithmop.operand     = ADD;
-    value.arithmop.operand_num = ADD_NUM;
-    Node* copied_left  = node->left;
-    Node* copied_right = node->right; // FIXME FIXPLS with DSL here-----v
-    return InitNewNode(OPERAND, value, InitNewNode(OPERAND, GetValue(), Differentiation(left), copied_right), InitNewNode(OPERAND, GetValue!!!, copied_left, Differentiation(right)))
+Node* MulDiff(Node* node) {
+    Node* cleft  = node->left;
+    Node* cright = node->right; // FIXME FIXPLS with DSL here-----v
+    return GETDIFFMULNODE(node->left, cleft, node->right, cright);
 }
 
-Node* DivDiff() {
-    Value_Type value = {};
-    value.arithmop.operand     = DIV;
-    value.arithmop.operand_num = DIV_NUM;
-    Node* copied_left_subtree  = node->left;
-    Node* copied_right_subtree = node->right;
-    return InitNewNode(OPERAND, , /*THIS INIT SHOULD BE WITH DOUBLE INITNEWNODE INSIDE*/ InitNewNode(), /*power 2 for right node*/InitNewNode())
+Node* DivDiff(Node* node) {
+    Node* cleft  = node->left;
+    Node* cright = node->right;
+    return GETDIFFDIVNODE(node->left, cleft, node->right, cright);
 }
 
+#if 0
 Node* PowDiff() {
 
 
@@ -128,25 +119,16 @@ Node* LogDiff() {
 
 }
 
-
-Node* ChangeNode() { // for what??
-
-}
-
+#endif
 
 Node* DiffLeaf(Node* node) {
-    Node* new_node = (Node*)calloc(sizeof(Node), 1);
-    new_node->data_type = node->data_type;
-    new_node->parent    = node->parent;
-    new_node->left      = node->left;
-    new_node->right     = node->right;
     if (node->data_type == CONST)
-        new_node->value.number = 0;
-    else if (node->data_type == VARIABLE)
-        new_node->value.number = 1;
+        node->value.number = 0;
+    else if (node->data_type == VARIABLE){
+        node->value = CONSTVALUE(CONST, 1);
+    }
 
-    free(node);
-    return new_node;
+    return node;
 }
 
 
