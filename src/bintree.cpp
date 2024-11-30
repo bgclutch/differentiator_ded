@@ -39,7 +39,7 @@ Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left,
     new_node->left  = left;
     new_node->right = right;
     if (left)
-        left->parent = new_node;
+        left->parent  = new_node;
     if (right)
         right->parent = new_node;
 
@@ -95,11 +95,11 @@ Value_Type GetValue(const Data_Type data_type, const int op_num, const char vari
             break;
 
         case OPERAND:
-            value.arithmop = operand_array[op_num]; // NOTE struct array!!!
+            value.arithmop = operand_array[op_num];
             break;
 
         case FUNCTION:
-            value.funciton = func_array[func_num]; // NOTE struct array!!!
+            value.funciton = func_array[func_num];
             break;
 
         case SYNTAXERROR:
