@@ -44,6 +44,9 @@ Node* Differentiation(Node* node) {
         else if (node->value.arithmop.operand == DIV){
             node = DivDiff(node);
         }
+        else if (node->value.arithmop.operand == POW){
+            node = PowDiff(node);
+        }
         else{
             assert(0);
         }
@@ -96,6 +99,30 @@ Node* DivDiff(Node* node) {
     return GETDIFFDIVNODE(node, cleft, cright);
 }
 
+Node* PowDiff(Node* node) {
+    Node* cleft  = CopyNode(node->left);
+    Node* cright = CopyNode(node->right);
+    if (IsVarInBranch(node->left) && !IsVarInBranch(node->right)){ // var^const
+        return GETDIFFPOWNODEVARCONST(node, cleft, cright);
+    }
+    else if (!IsVarInBranch(node->left) && IsVarInBranch(node->right)) { // const^var
+        return GETDIFFPOWNODECONSTVAR(node, cleft, cright);
+    }
+    else if (IsVarInBranch(node->left) && IsVarInBranch(node->right)) { // var^var
+        assert(0);
+    }
+    else if (!IsVarInBranch(node->left) && !IsVarInBranch(node->right)) { // just a number
+        free(cleft);
+        free(cright);
+        free(node->left);
+        free(node->right);
+        return ChangeNode(node, CONST, CONSTVALUE(0), nullptr, nullptr);
+    }
+    else {
+        assert(0);
+    }
+}
+
 Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
     switch (data_type) {
     case VARIABLE:
@@ -132,13 +159,21 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
     return node;
 }
 
-#if 0
-Node* PowDiff() {
+int IsVarInBranch(Node* node) { // node->left needed for base node->right needed for power
+    if (node->left)
+        return IsVarInBranch(node->left);
+    if (node->right)
+        return IsVarInBranch(node->right);
 
-
-    return InitNewNode();
+    int value = 0;
+    if (node->data_type == VARIABLE)
+        value = 1;
+    if (node->data_type == CONST)
+        value = 0;
+    return value;
 }
 
+#if 0
 Node* SinDiff() { // NOTE read next line comment
     return InitNewNode(FUNCTION, /*GetValue with mul*/, Differentiation(right), InitNewNode(, /*init with cos here*/,,)); // NOTE mul with diff of inside func or divide by cases???????
 }
@@ -162,7 +197,7 @@ Node* DiffLeaf(Node* node) {
         node->value.number = 0;
     else if (node->data_type == VARIABLE){
         node->data_type = CONST;
-        node->value = CONSTVALUE(CONST, 1);
+        node->value = CONSTVALUE(1);
     }
 
     return node;
