@@ -52,26 +52,23 @@ Node* Differentiation(Node* node) {
             assert(0);
         }
     }
-    #if 0
     else if (node->data_type == FUNCTION){
         if (node->value.funciton.func_num == SIN_NUM){
-            node = SinDiff();
+            node = SinDiff(node);
         }
         else if (node->value.funciton.func_num == COS_NUM){
-            node = CosDiff();
+            node = CosDiff(node);
         }
         else if (node->value.funciton.func_num == TAN_NUM){
-            node = TanDiff();
+            node = TanDiff(node);
         }
         else if (node->value.funciton.func_num == LN_NUM){
-            node = LogDiff();
+            node = LogDiff(node);
         }
         else{
             assert(0);
         }
-
     }
-    #endif
     else {
         assert(0);
     }
@@ -160,6 +157,26 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
     return node;
 }
 
+Node* SinDiff(Node* node) {
+    Node* cright = CopyNode(node->right);
+    return GETDIFFSINNODE(node, cright);
+}
+
+Node* CosDiff(Node* node) {
+    Node* cright = CopyNode(node->right);
+    return GETDIFFCOSNODE(node, cright);
+}
+
+Node* TanDiff(Node* node) {
+    Node* cright = CopyNode(node->right);
+    return GETDIFFTANNODE(node, cright);
+}
+
+Node* LogDiff(Node* node) {
+    Node* cright = CopyNode(node->right);
+    return GETDIFFLNNODE(node, cright);
+}
+
 int IsVarInBranch(Node* node) { // node->left needed for base node->right needed for power
     if (node->left)
         return IsVarInBranch(node->left);
@@ -174,24 +191,6 @@ int IsVarInBranch(Node* node) { // node->left needed for base node->right needed
     return value;
 }
 
-#if 0
-Node* SinDiff() { // NOTE read next line comment
-    return InitNewNode(FUNCTION, /*GetValue with mul*/, Differentiation(right), InitNewNode(, /*init with cos here*/,,)); // NOTE mul with diff of inside func or divide by cases???????
-}
-
-Node* CosDiff() {
-    return InitNewNode();
-}
-
-Node* TanDiff() {
-
-}
-
-Node* LogDiff() {
-
-}
-
-#endif
 
 Node* DiffLeaf(Node* node) {
     if (node->data_type == CONST)

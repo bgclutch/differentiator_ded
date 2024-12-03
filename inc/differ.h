@@ -41,20 +41,24 @@ enum Text_Colors
 #define GETOPERNODE( oper_num, left, right) InitNewNode(OPERAND,   OPERVALUE(oper_num),    left,   right)
 #define GETFUNCNODE( func_num, right)       InitNewNode(FUNCTION,  FUNCVALUE(func_num), nullptr,   right)
 
-
 #define GETDIFFVARNODE(  node, variable)              ChangeNode(node, VARIABLE,  VARVALUE( variable), nullptr, nullptr)
 #define GETDIFFCONSTNODE(node, value)                 ChangeNode(node, CONST,     CONSTVALUE(  value), nullptr, nullptr)
 #define GETDIFFOPERNODE( node, oper_num, left, right) ChangeNode(node, OPERAND,   OPERVALUE(oper_num),    left,   right)
 #define GETDIFFFUNCNODE( node, func_num, right)       ChangeNode(node, FUNCTION,  FUNCVALUE(func_num), nullptr,   right)
 
-
 #define GETDIFFADDNODE(node)                GETDIFFOPERNODE(node, ADD_NUM, Differentiation(node->left), Differentiation(node->right))
 #define GETDIFFSUBNODE(node)                GETDIFFOPERNODE(node, SUB_NUM, Differentiation(node->left), Differentiation(node->right))
 #define GETDIFFMULNODE(node, cleft, cright) GETDIFFOPERNODE(node, ADD_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right)))
 #define GETDIFFDIVNODE(node, cleft, cright) GETDIFFOPERNODE(node, DIV_NUM, GETOPERNODE(SUB_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right))), GETOPERNODE(POW_NUM, CopyNode(cright), GETCONSTNODE(2)))
+
 #define GETDIFFPOWNODEVARCONST(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, node->right, GETOPERNODE(POW_NUM, cleft, GETOPERNODE(SUB_NUM, cright, GETCONSTNODE(1)))), Differentiation(node->left))
 #define GETDIFFPOWNODECONSTVAR(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, GETOPERNODE(POW_NUM, node->left, cright), GETFUNCNODE(LN_NUM, cleft)), Differentiation(node->right))
 // #define GETDIFFPOWNODEVARVAR(  node, cleft, cright) GETDIFFOPERNODE(node, POW_NUM, GETOPERNODE(), GETOPERNODE())
+
+#define GETDIFFSINNODE(node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETFUNCNODE(COS_NUM, cright), Differentiation(node->right))
+#define GETDIFFCOSNODE(node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(SUB_NUM, GETCONSTNODE(0), GETFUNCNODE(SIN_NUM, cright)), Differentiation(node->right))
+#define GETDIFFTANNODE(node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(DIV_NUM, GETCONSTNODE(1), GETOPERNODE(POW_NUM, GETFUNCNODE(COS_NUM, cright), GETCONSTNODE(2))), Differentiation(node->right))
+#define GETDIFFLNNODE(node, cright)  GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(DIV_NUM, GETCONSTNODE(1), cright), Differentiation(node->right))
 
 
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
@@ -74,6 +78,14 @@ Node* MulDiff(Node* node);
 Node* DivDiff(Node* node);
 
 Node* PowDiff(Node* node);
+
+Node* SinDiff(Node* node);
+
+Node* CosDiff(Node* node) ;
+
+Node* TanDiff(Node* node) ;
+
+Node* LogDiff(Node* node) ;
 
 Node* CopyNode(Node* node);
 
