@@ -7,6 +7,7 @@
 #include "../inc/bintree.h"
 #include "../inc/differ.h"
 #include "../inc/exprtree.h"
+#include "../inc/dsl.h"
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../lib_file_proc/file.h"
 
@@ -236,7 +237,7 @@ Node* GetE(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetT(string, position);
-        node_left = GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
+        node_left = OPER(GetOperandNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
@@ -247,7 +248,7 @@ Node* GetT(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetFunction(string, position);
-        node_left = GETOPERNODE(GetOperandNum((char)oper), node_left, node_right);
+        node_left = OPER(GetOperandNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
@@ -270,7 +271,7 @@ Node* GetPower(const char* string, size_t* position){
     if (string[*position] == POW){
         (*position)++;
         Node* node_right = GetP(string, position);
-        node_left = GETOPERNODE(POW_NUM, node_left, node_right);
+        node_left = OPER(POW_NUM, node_left, node_right);
     }
     return node_left;
 }
@@ -278,19 +279,19 @@ Node* GetPower(const char* string, size_t* position){
 Node* GetFunction(const char* string, size_t* position){
     if (strncmp(string + *position, SIN, strlen(SIN)) == 0){
         (*position) += strlen(SIN);
-        return GETFUNCNODE(SIN_NUM, GetPower(string, position));
+        return FUNC(SIN_NUM, GetPower(string, position));
     }
     else if (strncmp(string + *position, COS, strlen(COS)) == 0){
         (*position) += strlen(COS);
-        return GETFUNCNODE(COS_NUM, GetPower(string, position));
+        return FUNC(COS_NUM, GetPower(string, position));
     }
     else if (strncmp(string + *position, TAN, strlen(TAN)) == 0){
         (*position) += strlen(TAN);
-        return GETFUNCNODE(TAN_NUM, GetPower(string, position));
+        return FUNC(TAN_NUM, GetPower(string, position));
     }
     else if (strncmp(string + *position, LN, strlen(LN)) == 0){
         (*position) += strlen(LN);
-        return GETFUNCNODE(LN_NUM, GetPower(string, position));
+        return FUNC(LN_NUM, GetPower(string, position));
     }
     else {
         return GetPower(string, position);
@@ -304,7 +305,7 @@ Node* GetN(const char* string, size_t* position){
         if (isalpha(string[*position]))
             SyntaxError(__FILE__, __LINE__);
 
-        return GETVARNODE(variable);
+        return VAR(variable);
     }
     double val          = 0;
     int counter         = 0;
@@ -323,7 +324,7 @@ Node* GetN(const char* string, size_t* position){
     if (old_position == *position)
         SyntaxError(__FILE__, __LINE__);
     val /= pow(10, counter);
-    return GETCONSTNODE(val);
+    return CONST(val);
 }
 
 

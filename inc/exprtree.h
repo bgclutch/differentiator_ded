@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-enum Operand_Num{ // maybe struct array too?
+enum Operand_Num{
     SYNTERR_N   = -1,
     ADD_NUM     =  0,
     SUB_NUM     =  1,
@@ -17,7 +17,7 @@ struct Operand{
     Operand_Num operand_num;
 };
 
-enum Algebra_Func_Num{ // maybe struct array too?
+enum Algebra_Func_Num{
     SYNTERR_NUM = -1,
     SIN_NUM     =  0,
     COS_NUM     =  1,
@@ -91,16 +91,11 @@ enum Tree_Err
     DATA_BUFFER_CREATE_ERR = 0x04,
 };
 
-
-Data_Type GetNodeType(const char* arg_begin, const size_t arg_size);
-
 int IsOperand(const char argument);
 
 int IsConst(char argument);
 
 int IsFunction(const char* argument, const size_t arg_size);
-
-Value_Type GetNodeValue(const Data_Type data_type, const size_t data_size, const char* argument);
 
 char GetOperand(const char argument);
 

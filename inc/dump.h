@@ -68,7 +68,6 @@ void print_data_string(const Value_Type* value, const Data_Type data_type, FILE*
 
 void print_to_dump_file(const Node* node, FILE* dump_file, const Colors color);
 
-
 void dot_to_png(const char* name, Dump_St* General_Dump);
 
 void make_html_file(const char* filename);

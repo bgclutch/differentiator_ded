@@ -25,12 +25,6 @@ enum Tree_Errors
 
 };
 
-#define OPERVALUE(  index) GetValue(OPERAND,  index,        0,     0,     NAN)
-#define VARVALUE(variable) GetValue(VARIABLE,     0, variable,     0,     NAN)
-#define FUNCVALUE(  index) GetValue(FUNCTION,     0,        0, index,     NAN)
-#define CONSTVALUE(number) GetValue(CONST,        0,        0,     0,  number)
-
-
 void tree_branch_dtor(Node* node, const char* data, const size_t len);
 
 Tree_Errors tree_is_err(const Tree_Errors result, const char* name, const size_t line);

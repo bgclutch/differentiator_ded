@@ -8,6 +8,7 @@
 #include "../inc/bintree.h"
 #include "../inc/dump.h"
 #include "../inc/exprtree.h"
+#include "../inc/dsl.h"
 #include "../inc/colorised_output.h"
 #include "../../lib_file_proc/file.h"
 #include "../../lib_buffer_proc/buffer.h"
@@ -78,38 +79,38 @@ Node* Differentiation(Node* node) {
 
 
 Node* AddDiff(Node* node) {
-    return GETDIFFADDNODE(node);
+    return DIFFADD(node);
 }
 
 Node* SubDiff(Node* node) {
-    return GETDIFFSUBNODE(node);
+    return DIFFSUB(node);
 }
 
 Node* MulDiff(Node* node) {
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
-    return GETDIFFMULNODE(node, cleft, cright);
+    return DIFFMUL(node, cleft, cright);
 }
 
 Node* DivDiff(Node* node) {
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
-    return GETDIFFDIVNODE(node, cleft, cright);
+    return DIFFDIV(node, cleft, cright);
 }
 
 Node* PowDiff(Node* node) {
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
-    if (IsVarInBranch(node->left) && !IsVarInBranch(node->right)){ // var^const
-        return GETDIFFPOWNODEVARCONST(node, cleft, cright);
+    if (ISVARINBRANCH(node->left) && !ISVARINBRANCH(node->right)){ // var^const
+        return DIFFPOWVARCONST(node, cleft, cright);
     }
-    else if (!IsVarInBranch(node->left) && IsVarInBranch(node->right)) { // const^var
-        return GETDIFFPOWNODECONSTVAR(node, cleft, cright);
+    else if (!ISVARINBRANCH(node->left) && ISVARINBRANCH(node->right)) { // const^var
+        return DIFFPOWCONSTVAR(node, cleft, cright);
     }
-    else if (IsVarInBranch(node->left) && IsVarInBranch(node->right)) { // var^var
-        return GETDIFFPOWNODEVARVAR(node, cleft, cright);
+    else if (ISVARINBRANCH(node->left) && ISVARINBRANCH(node->right)) { // var^var
+        return DIFFPOWVARVAR(node, cleft, cright);
     }
-    else if (!IsVarInBranch(node->left) && !IsVarInBranch(node->right)) { // just a number
+    else if (!ISVARINBRANCH(node->left) && !ISVARINBRANCH(node->right)) { // just a number
         free(cleft);
         free(cright);
         free(node->left);
@@ -159,34 +160,34 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
 
 Node* SinDiff(Node* node) {
     Node* cright = CopyNode(node->right);
-    return GETDIFFSINNODE(node, cright);
+    return DIFFSIN(node, cright);
 }
 
 Node* CosDiff(Node* node) {
     Node* cright = CopyNode(node->right);
-    return GETDIFFCOSNODE(node, cright);
+    return DIFFCOS(node, cright);
 }
 
 Node* TanDiff(Node* node) {
     Node* cright = CopyNode(node->right);
-    return GETDIFFTANNODE(node, cright);
+    return DIFFTAN(node, cright);
 }
 
 Node* LogDiff(Node* node) {
     Node* cright = CopyNode(node->right);
-    return GETDIFFLNNODE(node, cright);
+    return DIFFLN(node, cright);
 }
 
-int IsVarInBranch(Node* node) { // node->left needed for base node->right needed for power
+int IsSmthInBranch(Node* node, Data_Type data_type) { // node->left needed for base node->right needed for power
     if (node->left)
-        return IsVarInBranch(node->left);
+        return IsSmthInBranch(node->left, data_type);
     if (node->right)
-        return IsVarInBranch(node->right);
+        return IsSmthInBranch(node->right, data_type);
 
     int value = 0;
-    if (node->data_type == VARIABLE)
+    if (node->data_type == data_type)
         value = 1;
-    if (node->data_type == CONST)
+    else
         value = 0;
     return value;
 }
@@ -206,12 +207,9 @@ Node* DiffLeaf(Node* node) {
 
 Node* CopyNode(Node* node) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
-    // fprintf(stderr, YELLOW_TEXT("copied node:%p\n"
-    //                 MAGENTA_TEXT("previous node:%p\n")), new_node, node);
     new_node->data_type = node->data_type;
     new_node->parent    = node->parent;
     new_node->value     = node->value;
-    // fprintf(stderr, , );
     if (node->left){
         new_node->left  = CopyNode(node->left);
         new_node->left->parent = new_node;
