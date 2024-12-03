@@ -107,7 +107,7 @@ Node* PowDiff(Node* node) {
         return GETDIFFPOWNODECONSTVAR(node, cleft, cright);
     }
     else if (IsVarInBranch(node->left) && IsVarInBranch(node->right)) { // var^var
-        assert(0);
+        return GETDIFFPOWNODEVARVAR(node, cleft, cright);
     }
     else if (!IsVarInBranch(node->left) && !IsVarInBranch(node->right)) { // just a number
         free(cleft);
@@ -120,7 +120,7 @@ Node* PowDiff(Node* node) {
         assert(0);
     }
 }
-
+// TODO codegeneration
 Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
     switch (data_type) {
     case VARIABLE:

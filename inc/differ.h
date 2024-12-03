@@ -7,6 +7,9 @@
 
 #define AKN_ERR(result, error) if(akinator_is_err(result, __FILE__, __LINE__) == MACRO_AK_ERR) return error
 
+const double EULERSNUM = 2.718281828904590;
+const double PI        = 3.141592653589793;
+
 
 enum Differ_Err
 {
@@ -53,12 +56,12 @@ enum Text_Colors
 
 #define GETDIFFPOWNODEVARCONST(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, node->right, GETOPERNODE(POW_NUM, cleft, GETOPERNODE(SUB_NUM, cright, GETCONSTNODE(1)))), Differentiation(node->left))
 #define GETDIFFPOWNODECONSTVAR(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, GETOPERNODE(POW_NUM, node->left, cright), GETFUNCNODE(LN_NUM, cleft)), Differentiation(node->right))
-// #define GETDIFFPOWNODEVARVAR(  node, cleft, cright) GETDIFFOPERNODE(node, POW_NUM, GETOPERNODE(), GETOPERNODE())
+#define GETDIFFPOWNODEVARVAR(  node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(POW_NUM, GETCONSTNODE(EULERSNUM), GETOPERNODE(MUL_NUM, node->right, GETFUNCNODE(LN_NUM, node->left))), Differentiation(GETOPERNODE(MUL_NUM, cright, GETFUNCNODE(LN_NUM, cleft))))
 
 #define GETDIFFSINNODE(node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETFUNCNODE(COS_NUM, cright), Differentiation(node->right))
 #define GETDIFFCOSNODE(node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(SUB_NUM, GETCONSTNODE(0), GETFUNCNODE(SIN_NUM, cright)), Differentiation(node->right))
 #define GETDIFFTANNODE(node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(DIV_NUM, GETCONSTNODE(1), GETOPERNODE(POW_NUM, GETFUNCNODE(COS_NUM, cright), GETCONSTNODE(2))), Differentiation(node->right))
-#define GETDIFFLNNODE(node, cright)  GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(DIV_NUM, GETCONSTNODE(1), cright), Differentiation(node->right))
+#define GETDIFFLNNODE( node, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(DIV_NUM, GETCONSTNODE(1), cright), Differentiation(node->right))
 
 
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
