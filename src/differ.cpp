@@ -206,15 +206,20 @@ Node* DiffLeaf(Node* node) {
 
 Node* CopyNode(Node* node) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
-    fprintf(stderr, YELLOW_TEXT("copied node:%p\n"
-                    MAGENTA_TEXT("previous node:%p\n")), new_node, node);
+    // fprintf(stderr, YELLOW_TEXT("copied node:%p\n"
+    //                 MAGENTA_TEXT("previous node:%p\n")), new_node, node);
     new_node->data_type = node->data_type;
     new_node->parent    = node->parent;
     new_node->value     = node->value;
-    if (node->left)
+    // fprintf(stderr, , );
+    if (node->left){
         new_node->left  = CopyNode(node->left);
-    if (node->right)
+        new_node->left->parent = new_node;
+    }
+    if (node->right){
         new_node->right = CopyNode(node->right);
+        new_node->right->parent = new_node;
+    }
 
     return new_node;
 }
