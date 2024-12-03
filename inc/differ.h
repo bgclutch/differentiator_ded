@@ -19,8 +19,9 @@
 #define ISFUNCINBRANCH( node) IsSmthInBranch(node, FUNCTION)
 #define ISOPERINBRANCH( node) IsSmthInBranch(node, OPERAND)
 
-const double EULERSNUM = 2.718281828904590;
-const double PI        = 3.141592653589793;
+const double EULERSNUM = 2.7183;
+const double PI        = 3.1415;
+const double EPSILON   = 0.0001;
 
 
 enum Differ_Err
@@ -39,15 +40,6 @@ enum Differ_Err
 
 };
 
-enum Text_Colors
-{
-    REDTEXT,
-    BLUETEXT,
-    GREENTEXT,
-    MAGENTATEXT,
-    YELLOWTEXT,
-};
-
 Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t line);
 
 Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right);
@@ -55,6 +47,12 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
 int IsSmthInBranch(Node* node, Data_Type data_type);
 
 Node* Differentiation(Node* node);
+
+Node* Simplification(Node* node);
+
+double GetOperResult(Node* node);
+
+int IsZero(const double num);
 
 Node* AddDiff(Node* node);
 

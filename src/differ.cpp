@@ -221,3 +221,87 @@ Node* CopyNode(Node* node) {
 
     return new_node;
 }
+
+Node* Simplification(Node* node) {
+    if (node->data_type != OPERAND){
+        if (node->left)
+            Simplification(node->left);
+        if (node->right)
+            Simplification(node->right);
+    }
+    if (node->left->data_type == node->right->data_type && node->left->data_type == CONST){
+        if (node->value.arithmop.operand_num == DIV_NUM && IsZero(node->right->value.number))
+            return nullptr;
+        node = ChangeNode(node, CONST, CONSTVALUE(GetOperResult(node)), node->left, node->right);
+        free(node->left);
+        node->left = nullptr;
+        free(node->right);
+        node->right = nullptr;
+        if (node->value.number < -EPSILON){
+            node = ChangeNode(node, OPERAND, OPERVALUE(SUB_NUM), ChangeNode(node->left, CONST, CONSTVALUE(0), nullptr, nullptr),
+                   ChangeNode(node->right, CONST, CONSTVALUE(node->value.number), nullptr, nullptr));
+        }
+    }
+    Node* lnode = node->left;
+    Node* rnode = node->right;
+    if ((node->value.arithmop.operand_num == ADD_NUM || node->value.arithmop.operand_num == SUB_NUM) &&
+     ((lnode->data_type == CONST && IsZero(lnode->value.number)) || (rnode->data_type == CONST && IsZero(rnode->value.number)))){
+        if (lnode->data_type == CONST){
+            node = ChangeNode(node, rnode->data_type, rnode->value, rnode->left, rnode->right);
+        }
+        else if (rnode->data_type == CONST){
+            node = ChangeNode(node, lnode->data_type, rnode->value, lnode->left, lnode->right);
+        }
+        else{
+            assert(0);
+        }
+    }
+    #if 0
+    else if (node->value.arithmop.operand_num == MUL_NUM){
+
+    }
+    else if (node->value.arithmop.operand_num == DIV_NUM){
+
+    }
+    else if (node->value.arithmop.operand_num == POW_NUM){
+
+    }
+    else{
+        assert(0);
+    }
+    #endif
+
+
+    return node;
+}
+
+
+double GetOperResult(Node* node) {
+    double num = 0;
+    switch (node->value.arithmop.operand_num){
+        case ADD_NUM:
+            num = node->left->value.number + node->right->value.number;
+            break;
+        case SUB_NUM:
+            num = node->left->value.number - node->right->value.number;
+            break;
+        case MUL_NUM:
+            num = node->left->value.number * node->right->value.number;
+            break;
+        case DIV_NUM:
+            num = node->left->value.number / node->right->value.number;
+            break;
+        case POW_NUM:
+            num = pow(node->left->value.number, node->right->value.number);
+            break;
+        case SYNTERR_N:
+            assert(0);
+        default:
+            assert(0);
+    }
+    return num;
+}
+
+int IsZero(const double num) {
+    return fabs(num) < EPSILON;
+}

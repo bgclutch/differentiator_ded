@@ -18,6 +18,8 @@ int main(const int argc, const char* argv[])
     create_png(&dump_st, tree.root);
     Differentiation(tree.root);
     create_png(&dump_st, tree.root);
+    Simplification(tree.root);
+    create_png(&dump_st, tree.root);
     tree_dtor(&tree);
 
     return EXIT_SUCCESS;
