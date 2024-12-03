@@ -52,8 +52,8 @@ enum Text_Colors
 #define GETDIFFSUBNODE(node)                GETDIFFOPERNODE(node, SUB_NUM, Differentiation(node->left), Differentiation(node->right))
 #define GETDIFFMULNODE(node, cleft, cright) GETDIFFOPERNODE(node, ADD_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right)))
 #define GETDIFFDIVNODE(node, cleft, cright) GETDIFFOPERNODE(node, DIV_NUM, GETOPERNODE(SUB_NUM, GETOPERNODE(MUL_NUM, Differentiation(node->left), cright), GETOPERNODE(MUL_NUM, cleft, Differentiation(node->right))), GETOPERNODE(POW_NUM, CopyNode(cright), GETCONSTNODE(2)))
-#define GETDIFFPOWNODEVARCONST(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, cright, GETOPERNODE(POW_NUM, cleft, GETOPERNODE(SUB_NUM, cright, GETCONSTNODE(1)))), Differentiation(node->left))
-#define GETDIFFPOWNODECONSTVAR(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(DIV_NUM, GETCONSTNODE(1), GETOPERNODE(MUL_NUM, GETFUNCNODE(LN_NUM, cleft), cright)), Differentiation(node->left))
+#define GETDIFFPOWNODEVARCONST(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, node->right, GETOPERNODE(POW_NUM, cleft, GETOPERNODE(SUB_NUM, cright, GETCONSTNODE(1)))), Differentiation(node->left))
+#define GETDIFFPOWNODECONSTVAR(node, cleft, cright) GETDIFFOPERNODE(node, MUL_NUM, GETOPERNODE(MUL_NUM, GETOPERNODE(POW_NUM, node->left, cright), GETFUNCNODE(LN_NUM, cleft)), Differentiation(node->right))
 // #define GETDIFFPOWNODEVARVAR(  node, cleft, cright) GETDIFFOPERNODE(node, POW_NUM, GETOPERNODE(), GETOPERNODE())
 
 

@@ -8,6 +8,7 @@
 #include "../inc/bintree.h"
 #include "../inc/dump.h"
 #include "../inc/exprtree.h"
+#include "../inc/colorised_output.h"
 #include "../../lib_file_proc/file.h"
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../stack_ded/stack_headers/colorised_output.h"
@@ -206,6 +207,8 @@ Node* DiffLeaf(Node* node) {
 
 Node* CopyNode(Node* node) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
+    fprintf(stderr, YELLOW_TEXT("copied node:%p\n"
+                    MAGENTA_TEXT("previous node:%p\n")), new_node, node);
     new_node->data_type = node->data_type;
     new_node->parent    = node->parent;
     new_node->value     = node->value;

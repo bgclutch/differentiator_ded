@@ -270,7 +270,7 @@ Node* GetPower(const char* string, size_t* position){
     if (string[*position] == POW){
         (*position)++;
         Node* node_right = GetP(string, position);
-        return GETOPERNODE(POW_NUM, node_left, node_right);
+        node_left = GETOPERNODE(POW_NUM, node_left, node_right);
     }
     return node_left;
 }

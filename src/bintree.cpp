@@ -11,6 +11,7 @@
 
 Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
+    fprintf(stderr, BLUE_TEXT("created node:%p\n"), new_node);
     switch (data_type) {
     case VARIABLE:
         new_node->data_type = VARIABLE;
@@ -74,7 +75,7 @@ void tree_branch_dtor(Node* node, const char* data, const size_t len)
     {
         tree_branch_dtor(node->right, data, len);
     }
-
+    fprintf(stderr, RED_TEXT("deleted node:%p\n"), node);
     free(node);
 
     return;
