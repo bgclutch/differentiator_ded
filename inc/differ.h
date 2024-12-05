@@ -49,7 +49,7 @@ int IsSmthInBranch(Node* node, Data_Type data_type);
 
 Node* Differentiation(Node* node);
 
-void Simplification(Node* node, Dump_St*, Node*);
+void Simplification(Node* node);
 
 double GetOperResult(Node* node);
 

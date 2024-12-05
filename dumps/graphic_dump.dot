@@ -14,31 +14,17 @@ bgcolor = "#aedeb0";
 <tr><td>NULL</td></tr></table>>];
 
 "0x607000000170" -> "0x6070000001a8";
-"0x607000000410" [style = "filled", fillcolor = "lightgreen",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x607000000170</td></tr>
-<tr><td colspan="2">Address: 0x607000000410</td></tr>
-<tr><td colspan="2">Data Type: variable</td></tr>
-<tr><td colspan="2">x</td></tr>
-<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
-
-"0x607000000170" -> "0x607000000410";
-"0x607000000410" -> "0x607000000448";
-"0x607000000448" [style = "filled", fillcolor = "#ff9191", label=<
+"0x6070000001b0" [style = "filled", fillcolor = "#ff9191", label=<
 <table border = "0" cellspacing="2" cellpadding="4">
 <tr><td>NULL</td></tr></table>>];
 
-"0x607000000410" -> "0x607000000450";
-"0x607000000450" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x607000000170" [style = "filled", fillcolor = "#ced7ea",label=<
+"0x607000000170" -> "0x6070000001b0";
+"0x607000000170" [style = "filled", fillcolor = "lightgreen",label=<
 <table border="1" cellspacing="0" cellpadding="4">
 <tr><td colspan="2">Parent:  (nil)</td></tr>
 <tr><td colspan="2">Address: 0x607000000170</td></tr>
-<tr><td colspan="2">Data Type: function</td></tr>
-<tr><td colspan="2">cos</td></tr>
-<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:0x607000000410</td></tr></table>>];
+<tr><td colspan="2">Data Type: constant</td></tr>
+<tr><td colspan="2">0</td></tr>
+<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
 
 }
