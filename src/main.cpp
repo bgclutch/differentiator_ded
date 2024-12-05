@@ -5,6 +5,7 @@
 
 #include "../inc/dump.h"
 #include "../inc/treeRW.h"
+#include "../inc/simplification.h"
 
 int main(const int argc, const char* argv[])
 {

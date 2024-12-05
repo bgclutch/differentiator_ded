@@ -5,6 +5,7 @@
 #include "differ.h"
 
 
+
 Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* database);
 
 Differ_Err write_tree_to_file(Node* root, const char* outpfilename);
@@ -19,7 +20,7 @@ void tree_dtor(Tree* tree);
 
 Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database);
 
-Node* RecursiveDecent(const char*, size_t*);
+Node* RecursiveDescent(const char*, size_t*);
 
 Node* GetG(const char*, size_t*);
 
@@ -35,6 +36,6 @@ Node* GetPower(const char*, size_t*);
 
 Node* GetFunction(const char*, size_t*);
 
-void SyntaxError(const char* file, const size_t line);
+void SyntaxError(const char* file, const size_t line, const size_t position);
 
 #endif // TREERW_H_

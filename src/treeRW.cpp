@@ -55,150 +55,10 @@ Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
     tree->buffer = buffer;
     size_t position = 0;
 
-    tree->root = RecursiveDecent(tree->buffer, &position);
+    tree->root = RecursiveDescent(tree->buffer, &position);
 
     return DIFFER_IS_OKAY;
 }
-
-#if 0
-Differ_Err read_tree_from_file(Tree* tree, Variable_Array_St* variable_array_st)
-{
-    assert(tree);
-
-    size_t buffer_size = 0;
-    char* buffer = nullptr;
-
-    if(create_data_buffer(&buffer, &buffer_size) != DIFFER_IS_OKAY)
-    {
-        free(buffer);
-        return DIFFER_BUFFER_CTOR_ERR;
-    }
-
-    tree->buffer = buffer;
-
-    const char* bufend = buffer + buffer_size;
-    char* root_question = find_word_begin(buffer, bufend);
-
-    size_t all_bytes = 0;
-
-    size_t root_question_size = get_node_data_size(root_question);
-
-    if(node_init(&tree->root, root_question_size, root_question, variable_array_st) != NODE_IS_OKAY)
-        assert(0);
-
-    all_bytes += root_question_size;
-
-    Node* root_addr = tree->root;
-
-    root_addr->left   = nullptr;
-    root_addr->right  = nullptr;
-    root_addr->parent = nullptr;
-
-    if(init_tree_nodes(root_addr, buffer, &all_bytes, variable_array_st) != DIFFER_IS_OKAY)
-    {
-        free(buffer);
-        return DIFFER_IS_DEAD;
-    }
-
-    return DIFFER_IS_OKAY;
-}
-
-
-void create_new_node(Node** node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
-{
-    assert(!*node);
-    assert(buffer);
-    assert(all_bytes);
-
-    else
-    {
-        create_new_node(&(*node)->left, buffer, all_bytes, variable_array_st);
-        (*node)->left->parent = *node;
-
-        create_new_node(&(*node)->right, buffer, all_bytes, variable_array_st);
-        (*node)->right->parent = *node;
-    }
-    return;
-}
-
-
-Differ_Err init_tree_nodes(Node* node, char* buffer, size_t* all_bytes, Variable_Array_St* variable_array_st)
-{
-    assert(node);
-    assert(buffer);
-    assert(all_bytes);
-
-    create_new_node(&node->left, buffer, all_bytes, variable_array_st);
-    node->left->parent = node;
-
-    create_new_node(&node->right, buffer, all_bytes, variable_array_st);
-    node->right->parent = node;
-
-    return DIFFER_IS_OKAY;
-}
-
-
-Differ_Err write_tree_to_file(Node* root, const char* outputfilename)
-{
-    assert(root);
-    assert(outputfilename);
-
-    FILE* write_tree_file = nullptr;
-
-    if(file_write_open(&write_tree_file, outputfilename) == FILE_W_OPEN_ERR)
-        return DIFFER_FILE_ERROR;
-
-    write_tree_to_file(root, write_tree_file);
-    file_close(write_tree_file);
-
-    return DIFFER_IS_OKAY;
-}
-
-
-Differ_Err write_tree_to_file(Node* root, FILE* file)
-{
-    assert(root);
-    assert(file);
-
-    fprintf(file, "{");
-
-    for(size_t i = 0; i < root->data_size; i++)
-        fprintf(file, "%c", root->data[i]);
-
-    write_nodes_to_file(root->left,  file);
-    write_nodes_to_file(root->right, file);
-
-    fprintf(file, "}");
-    return DIFFER_IS_OKAY;
-}
-
-void write_nodes_to_file(Node* node, FILE* file)
-{
-    assert(node);
-    assert(file);
-
-    fprintf(file, "{");
-
-    for(size_t i = 0; i < node->data_size; i++)
-        fprintf(file, "%c", node->data[i]);
-
-    if(!node->left && !node->right)
-    {
-        fprintf(file, "}");
-
-        return;
-    }
-    else
-    {
-        write_nodes_to_file(node->left,  file);
-        write_nodes_to_file(node->right, file);
-    }
-
-    fprintf(file, "}");
-    return;
-}
-#endif
-
 
 Tree tree_ctor(const char* database)
 {
@@ -208,7 +68,6 @@ Tree tree_ctor(const char* database)
     return tree;
 }
 
-
 void tree_dtor(Tree* tree)
 {
     assert(tree);
@@ -217,15 +76,14 @@ void tree_dtor(Tree* tree)
     free(tree->buffer);
 }
 
-
-Node* RecursiveDecent(const char* string, size_t* position){
+Node* RecursiveDescent(const char* string, size_t* position){
     return GetG(string, position); // root
 }
 
 Node* GetG(const char* string, size_t* position) {
     Node* node = GetE(string, position);
     if (string[*position] != '\0'){
-        SyntaxError(__FILE__, __LINE__);
+        SyntaxError(__FILE__, __LINE__, *position);
     }
     (*position)++;
     return node;
@@ -253,12 +111,12 @@ Node* GetT(const char* string, size_t* position){
     return node_left;
 }
 
-Node* GetP(const char* string, size_t* position){ // FIXME
+Node* GetP(const char* string, size_t* position){
     if (string[*position] == '('){
         (*position)++;
         Node* node = GetE(string, position);
         if (string[*position] != ')')
-            SyntaxError(__FILE__, __LINE__);
+            SyntaxError(__FILE__, __LINE__, *position);
         (*position)++;
         return node;
     }
@@ -268,7 +126,7 @@ Node* GetP(const char* string, size_t* position){ // FIXME
 
 Node* GetPower(const char* string, size_t* position){
     Node* node_left = GetP(string, position);
-    if (string[*position] == POW){
+    while (string[*position] == POW){
         (*position)++;
         Node* node_right = GetP(string, position);
         node_left = OPER(POW_NUM, node_left, node_right);
@@ -303,7 +161,7 @@ Node* GetN(const char* string, size_t* position){
         char variable = string[*position];
         (*position)++;
         if (isalpha(string[*position]))
-            SyntaxError(__FILE__, __LINE__);
+            SyntaxError(__FILE__, __LINE__, *position);
 
         return VAR(variable);
     }
@@ -322,14 +180,14 @@ Node* GetN(const char* string, size_t* position){
         (*position)++;
     }
     if (old_position == *position)
-        SyntaxError(__FILE__, __LINE__);
+        SyntaxError(__FILE__, __LINE__, *position);
     val /= pow(10, counter);
     return CONST(val);
 }
 
 
-void SyntaxError(const char* file, const size_t line){
-    fprintf(stderr, "%s:%lu\n", file, line);
+void SyntaxError(const char* file, const size_t line, const size_t position){
+    fprintf(stderr, "%s:%lu\nposition:%lu\n", file, line, position);
     assert(0);
     return;
 }
