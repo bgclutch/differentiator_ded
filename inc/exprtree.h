@@ -58,6 +58,7 @@ struct Tree
 {
     Node* root;
     char* buffer;
+    char* analyzedbuf;
 };
 
 static const char ADD = '+'; // maybe struct array too?

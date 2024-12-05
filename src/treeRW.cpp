@@ -39,6 +39,18 @@ Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* da
     return DIFFER_IS_OKAY;
 }
 
+char* GetLexicalAnalyzedBuf(const char* buffer, const size_t bufsize) {
+    char* analyzedbuffer = (char*)calloc(sizeof(Node), bufsize);
+    for(size_t i = 0; i < bufsize; i++){
+        analyzedbuffer[i] = InitNewNode();
+    }
+
+
+
+
+
+    return analyzedbuffer;
+}
 
 Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
     assert(tree);
@@ -77,11 +89,11 @@ void tree_dtor(Tree* tree)
 }
 
 Node* RecursiveDescent(const char* string, size_t* position){
-    return GetG(string, position); // root
+    return GetRoot(string, position); // root
 }
 
-Node* GetG(const char* string, size_t* position) {
-    Node* node = GetE(string, position);
+Node* GetRoot(const char* string, size_t* position) {
+    Node* node = GetSumOrSub(string, position);
     if (string[*position] != '\0'){
         SyntaxError(__FILE__, __LINE__, *position);
     }
@@ -89,47 +101,47 @@ Node* GetG(const char* string, size_t* position) {
     return node;
 }
 
-Node* GetE(const char* string, size_t* position){
-    Node* node_left = GetT(string, position);
+Node* GetSumOrSub(const char* string, size_t* position){
+    Node* node_left = GetMulOrDiv(string, position);
     while (string[*position] == ADD || string[*position] == SUB){
         int oper = string[*position];
         (*position)++;
-        Node* node_right = GetT(string, position);
-        node_left = OPER(GetOperandNum((char)oper), node_left, node_right);
+        Node* node_right = GetMulOrDiv(string, position);
+        node_left = GETOPER(GetOperandNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
 
-Node* GetT(const char* string, size_t* position){
+Node* GetMulOrDiv(const char* string, size_t* position){
     Node* node_left = GetFunction(string, position);
     while (string[*position] == MUL || string[*position] == DIV){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetFunction(string, position);
-        node_left = OPER(GetOperandNum((char)oper), node_left, node_right);
+        node_left = GETOPER(GetOperandNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
 
-Node* GetP(const char* string, size_t* position){
+Node* GetScopeExpr(const char* string, size_t* position){
     if (string[*position] == '('){
         (*position)++;
-        Node* node = GetE(string, position);
+        Node* node = GetSumOrSub(string, position);
         if (string[*position] != ')')
             SyntaxError(__FILE__, __LINE__, *position);
         (*position)++;
         return node;
     }
     else
-        return GetN(string, position);
+        return GetConstOrVar(string, position);
 }
 
 Node* GetPower(const char* string, size_t* position){
-    Node* node_left = GetP(string, position);
+    Node* node_left = GetScopeExpr(string, position);
     while (string[*position] == POW){
         (*position)++;
-        Node* node_right = GetP(string, position);
-        node_left = OPER(POW_NUM, node_left, node_right);
+        Node* node_right = GetScopeExpr(string, position);
+        node_left = GETOPER(POW_NUM, node_left, node_right);
     }
     return node_left;
 }
@@ -137,33 +149,33 @@ Node* GetPower(const char* string, size_t* position){
 Node* GetFunction(const char* string, size_t* position){
     if (strncmp(string + *position, SIN, strlen(SIN)) == 0){
         (*position) += strlen(SIN);
-        return FUNC(SIN_NUM, GetPower(string, position));
+        return GETFUNC(SIN_NUM, GetPower(string, position));
     }
     else if (strncmp(string + *position, COS, strlen(COS)) == 0){
         (*position) += strlen(COS);
-        return FUNC(COS_NUM, GetPower(string, position));
+        return GETFUNC(COS_NUM, GetPower(string, position));
     }
     else if (strncmp(string + *position, TAN, strlen(TAN)) == 0){
         (*position) += strlen(TAN);
-        return FUNC(TAN_NUM, GetPower(string, position));
+        return GETFUNC(TAN_NUM, GetPower(string, position));
     }
     else if (strncmp(string + *position, LN, strlen(LN)) == 0){
         (*position) += strlen(LN);
-        return FUNC(LN_NUM, GetPower(string, position));
+        return GETFUNC(LN_NUM, GetPower(string, position));
     }
     else {
         return GetPower(string, position);
     }
 }
 
-Node* GetN(const char* string, size_t* position){
+Node* GetConstOrVar(const char* string, size_t* position){
     if (isalpha(string[*position])) {
         char variable = string[*position];
         (*position)++;
         if (isalpha(string[*position]))
             SyntaxError(__FILE__, __LINE__, *position);
 
-        return VAR(variable);
+        return GETVAR(variable);
     }
     double val          = 0;
     int counter         = 0;
@@ -182,7 +194,7 @@ Node* GetN(const char* string, size_t* position){
     if (old_position == *position)
         SyntaxError(__FILE__, __LINE__, *position);
     val /= pow(10, counter);
-    return CONST(val);
+    return GETCONST(val);
 }
 
 

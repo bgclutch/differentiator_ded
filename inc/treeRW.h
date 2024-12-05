@@ -4,8 +4,6 @@
 #include "bintree.h"
 #include "differ.h"
 
-
-
 Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* database);
 
 Differ_Err write_tree_to_file(Node* root, const char* outpfilename);
@@ -22,15 +20,15 @@ Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database);
 
 Node* RecursiveDescent(const char*, size_t*);
 
-Node* GetG(const char*, size_t*);
+Node* GetRoot(const char*, size_t*);
 
-Node* GetE(const char*, size_t*);
+Node* GetSumOrSub(const char*, size_t*);
 
-Node* GetT(const char*, size_t*);
+Node* GetMulOrDiv(const char*, size_t*);
 
-Node* GetP(const char*, size_t*);
+Node* GetScopeExpr(const char*, size_t*);
 
-Node* GetN(const char*, size_t*);
+Node* GetConstOrVar(const char*, size_t*);
 
 Node* GetPower(const char*, size_t*);
 

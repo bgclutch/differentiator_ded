@@ -26,7 +26,8 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
     if (node->left->data_type == CONST && node->left->data_type == node->right->data_type){
         if (node->value.arithmop.operand_num == DIV_NUM && IsZero(node->right->value.number))
             assert(0);
-        if (IsZero(node->left->value.number) && node->value.arithmop.operand_num == SUB_NUM && !IsZero(node->right->value.number)){
+        if (IsZero(node->left->value.number) && node->value.arithmop.operand_num == SUB_NUM &&
+            !IsZero(node->right->value.number)){
             return;
         }
         node = ChangeNode(node, CONST, CONSTVALUE(GetOperResult(node)), node->left, node->right);
