@@ -9,106 +9,22 @@ margin = 1;
 ranksep = 1;
 nodesep = 3;
 bgcolor = "#aedeb0";
-"0x607000000a30" [style = "filled", fillcolor = "#b18b62",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x6070000003a0</td></tr>
-<tr><td colspan="2">Address: 0x607000000a30</td></tr>
-<tr><td colspan="2">Data Type: operand</td></tr>
-<tr><td colspan="2">*</td></tr>
-<tr><td align = "center" >Left:0x607000000b80</td><td align = "center" >Right:0x607000000bf0</td></tr></table>>];
-
-"0x6070000003a0" -> "0x607000000a30";
-"0x607000000b80" [style = "filled", fillcolor = "lightgreen",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x607000000a30</td></tr>
-<tr><td colspan="2">Address: 0x607000000b80</td></tr>
-<tr><td colspan="2">Data Type: constant</td></tr>
-<tr><td colspan="2">8</td></tr>
-<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
-
-"0x607000000a30" -> "0x607000000b80";
-"0x607000000b80" -> "0x607000000bb8";
-"0x607000000bb8" [style = "filled", fillcolor = "#ff9191", label=<
+"0x6070000002f8" [style = "filled", fillcolor = "#ff9191", label=<
 <table border = "0" cellspacing="2" cellpadding="4">
 <tr><td>NULL</td></tr></table>>];
 
-"0x607000000b80" -> "0x607000000bc0";
-"0x607000000bc0" [style = "filled", fillcolor = "#ff9191", label=<
+"0x6070000002c0" -> "0x6070000002f8";
+"0x607000000300" [style = "filled", fillcolor = "#ff9191", label=<
 <table border = "0" cellspacing="2" cellpadding="4">
 <tr><td>NULL</td></tr></table>>];
 
-"0x607000000bf0" [style = "filled", fillcolor = "lightgreen",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x607000000a30</td></tr>
-<tr><td colspan="2">Address: 0x607000000bf0</td></tr>
-<tr><td colspan="2">Data Type: variable</td></tr>
-<tr><td colspan="2">x</td></tr>
-<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
-
-"0x607000000a30" -> "0x607000000bf0";
-"0x607000000bf0" -> "0x607000000c28";
-"0x607000000c28" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x607000000bf0" -> "0x607000000c30";
-"0x607000000c30" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x6070000009c0" [style = "filled", fillcolor = "#b18b62",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x6070000003a0</td></tr>
-<tr><td colspan="2">Address: 0x6070000009c0</td></tr>
-<tr><td colspan="2">Data Type: operand</td></tr>
-<tr><td colspan="2">*</td></tr>
-<tr><td align = "center" >Left:0x607000000480</td><td align = "center" >Right:0x607000000330</td></tr></table>>];
-
-"0x6070000003a0" -> "0x6070000009c0";
-"0x607000000480" [style = "filled", fillcolor = "lightgreen",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x6070000009c0</td></tr>
-<tr><td colspan="2">Address: 0x607000000480</td></tr>
-<tr><td colspan="2">Data Type: variable</td></tr>
-<tr><td colspan="2">x</td></tr>
-<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
-
-"0x6070000009c0" -> "0x607000000480";
-"0x607000000480" -> "0x6070000004b8";
-"0x6070000004b8" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x607000000480" -> "0x6070000004c0";
-"0x6070000004c0" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x607000000330" [style = "filled", fillcolor = "lightgreen",label=<
-<table border="1" cellspacing="0" cellpadding="4">
-<tr><td colspan="2">Parent:  0x6070000009c0</td></tr>
-<tr><td colspan="2">Address: 0x607000000330</td></tr>
-<tr><td colspan="2">Data Type: constant</td></tr>
-<tr><td colspan="2">8</td></tr>
-<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
-
-"0x6070000009c0" -> "0x607000000330";
-"0x607000000330" -> "0x607000000368";
-"0x607000000368" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x607000000330" -> "0x607000000370";
-"0x607000000370" [style = "filled", fillcolor = "#ff9191", label=<
-<table border = "0" cellspacing="2" cellpadding="4">
-<tr><td>NULL</td></tr></table>>];
-
-"0x6070000003a0" [style = "filled", fillcolor = "#ced7ea",label=<
+"0x6070000002c0" -> "0x607000000300";
+"0x6070000002c0" [style = "filled", fillcolor = "lightgreen",label=<
 <table border="1" cellspacing="0" cellpadding="4">
 <tr><td colspan="2">Parent:  (nil)</td></tr>
-<tr><td colspan="2">Address: 0x6070000003a0</td></tr>
-<tr><td colspan="2">Data Type: operand</td></tr>
-<tr><td colspan="2">+</td></tr>
-<tr><td align = "center" >Left:0x607000000a30</td><td align = "center" >Right:0x6070000009c0</td></tr></table>>];
+<tr><td colspan="2">Address: 0x6070000002c0</td></tr>
+<tr><td colspan="2">Data Type: constant</td></tr>
+<tr><td colspan="2">0</td></tr>
+<tr><td align = "center" >Left:(nil)</td><td align = "center" >Right:(nil)</td></tr></table>>];
 
 }

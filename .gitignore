@@ -1,2 +1,5 @@
 /bintree
 /bintree_o
+.vscode
+/dumps
+/dumps/html/
