@@ -4,6 +4,7 @@
 #include "../../lib_buffer_proc/buffer.h"
 #include "../../lib_file_proc/file.h"
 #include "bintree.h"
+#include "dump.h"
 
 #define AKN_ERR(result, error) if(akinator_is_err(result, __FILE__, __LINE__) == MACRO_AK_ERR) return error
 
@@ -48,7 +49,7 @@ int IsSmthInBranch(Node* node, Data_Type data_type);
 
 Node* Differentiation(Node* node);
 
-Node* Simplification(Node* node);
+void Simplification(Node* node, Dump_St*, Node*);
 
 double GetOperResult(Node* node);
 

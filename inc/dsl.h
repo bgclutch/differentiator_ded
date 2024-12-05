@@ -30,7 +30,7 @@
 #define DIFFFUNCNODE( node, func_num, right)       ChangeNode(node, FUNCTION,  FUNCVALUE(func_num), nullptr,   right)
 #define DIFFOPERNODE( node, oper_num, left, right) ChangeNode(node, OPERAND,   OPERVALUE(oper_num),    left,   right)
 //-----------------------------HELPERS FUNCTIONS FOR DIFF FUNCTIONS-------------------------------------------------------
-#define DIFFADDNODE(node, left, right)             DIFFOPERNODE(node, ADD_NUM, left, right)
+#define DIFFADDNODE(node, left, right)             DIFFOPERNODE(node, ADD_NUM, left, right) // REVIEW излишне
 #define DIFFSUBNODE(node, left, right)             DIFFOPERNODE(node, SUB_NUM, left, right)
 #define DIFFMULNODE(node, left, right)             DIFFOPERNODE(node, MUL_NUM, left, right)
 #define DIFFDIVNODE(node, left, right)             DIFFOPERNODE(node, DIV_NUM, left, right)
@@ -40,9 +40,8 @@
 #define DIFFMUL(node, cleft, cright)               DIFFADDNODE(node, MUL(LDIFF(node), cright), MUL(cleft, RDIFF(node)))
 #define DIFFDIV(node, cleft, cright)               DIFFDIVNODE(node, SUB(MUL(LDIFF(node), cright), MUL(cleft, RDIFF(node))), POW(COPY(cright), CONST(2)))
 //------------------------------------DIFFERENTIAL MACROS--------------------------------------------------------------------------
-#define DIFFPOWVARCONST(node, cleft, cright)       DIFFMULNODE(node, MUL(node->right, POW(cleft, SUB(cright, CONST(1)))), LDIFF(node))
-#define DIFFPOWCONSTVAR(node, cleft, cright)       DIFFMULNODE(node, MUL(POW(node->left, cright), LN(cleft)), RDIFF(node))
-#define DIFFPOWVARVAR(  node, cleft, cright)       DIFFMULNODE(node, POW(CONST(EULERSNUM), MUL(node->right, LN(node->left))), DIFF(MUL(cright, LN(cleft))))
+#define DIFFPOWCONST(node, cleft, cright)       DIFFMULNODE(node, MUL(node->right, POW(cleft, SUB(cright, CONST(1)))), LDIFF(node))
+#define DIFFPOWVAR(  node, cleft, cright)       DIFFMULNODE(node, POW(CONST(EULERSNUM), MUL(node->right, LN(node->left))), DIFF(MUL(cright, LN(cleft))))
 //---------------------------------DIFFERENTIATE FUNCS MACROS------------------------------------------------------------------------------------------
 #define DIFFSIN(node, cright)                      DIFFMULNODE(node, COS(cright), RDIFF(node))
 #define DIFFCOS(node, cright)                      DIFFMULNODE(node, SUB(CONST(0), SIN(cright)), RDIFF(node))

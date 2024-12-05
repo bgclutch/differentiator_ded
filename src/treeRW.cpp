@@ -213,7 +213,7 @@ void tree_dtor(Tree* tree)
 {
     assert(tree);
 
-    tree_branch_dtor(tree->root, tree->buffer, strlen(tree->buffer));
+    tree_branch_dtor(tree->root);
     free(tree->buffer);
 }
 
@@ -253,7 +253,7 @@ Node* GetT(const char* string, size_t* position){
     return node_left;
 }
 
-Node* GetP(const char* string, size_t* position){
+Node* GetP(const char* string, size_t* position){ // FIXME
     if (string[*position] == '('){
         (*position)++;
         Node* node = GetE(string, position);

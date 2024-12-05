@@ -25,7 +25,7 @@ enum Tree_Errors
 
 };
 
-void tree_branch_dtor(Node* node, const char* data, const size_t len);
+void tree_branch_dtor(Node* node);
 
 Tree_Errors tree_is_err(const Tree_Errors result, const char* name, const size_t line);
 

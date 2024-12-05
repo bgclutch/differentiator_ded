@@ -101,45 +101,31 @@ Node* DivDiff(Node* node) {
 Node* PowDiff(Node* node) {
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
-    if (ISVARINBRANCH(node->left) && !ISVARINBRANCH(node->right)){ // var^const
-        return DIFFPOWVARCONST(node, cleft, cright);
+    if (!ISVARINBRANCH(node->right)){ // var^const const^const
+        return DIFFPOWCONST(node, cleft, cright);
     }
-    else if (!ISVARINBRANCH(node->left) && ISVARINBRANCH(node->right)) { // const^var
-        return DIFFPOWCONSTVAR(node, cleft, cright);
-    }
-    else if (ISVARINBRANCH(node->left) && ISVARINBRANCH(node->right)) { // var^var
-        return DIFFPOWVARVAR(node, cleft, cright);
-    }
-    else if (!ISVARINBRANCH(node->left) && !ISVARINBRANCH(node->right)) { // just a number
-        free(cleft);
-        free(cright);
-        free(node->left);
-        free(node->right);
-        return ChangeNode(node, CONST, CONSTVALUE(0), nullptr, nullptr);
+    else if (ISVARINBRANCH(node->right)) { // var^var
+        return DIFFPOWVAR(node, cleft, cright);
     }
     else {
         assert(0);
     }
 }
-// TODO codegeneration
-Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
+// TODO codegeneration?
+Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // FIXME asserts !everywhere
     switch (data_type) {
     case VARIABLE:
         node->data_type = VARIABLE;
         break;
-
     case CONST:
         node->data_type = CONST;
         break;
-
     case OPERAND:
         node->data_type = OPERAND;
         break;
-
     case FUNCTION:
         node->data_type = FUNCTION;
         break;
-
     case SYNTAXERROR: // not good
         assert(0);
 
@@ -207,6 +193,8 @@ Node* DiffLeaf(Node* node) {
 
 Node* CopyNode(Node* node) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
+    fprintf(stderr, YELLOW_TEXT("copied node:%p\n"
+                    MAGENTA_TEXT("prev node:%p\n")), new_node, node);
     new_node->data_type = node->data_type;
     new_node->parent    = node->parent;
     new_node->value     = node->value;
@@ -222,57 +210,112 @@ Node* CopyNode(Node* node) {
     return new_node;
 }
 
-Node* Simplification(Node* node) {
-    if (node->data_type != OPERAND){
-        if (node->left)
-            Simplification(node->left);
-        if (node->right)
-            Simplification(node->right);
+void Simplification(Node* node, Dump_St* my_dump, Node* root) { // a lot copypaste but it all used once
+    fprintf(stderr, "simplif is here\n%p\n", node);
+
+    if (node->left){
+        Simplification(node->left, my_dump, root);
     }
-    if (node->left->data_type == node->right->data_type && node->left->data_type == CONST){
-        if (node->value.arithmop.operand_num == DIV_NUM && IsZero(node->right->value.number))
-            return nullptr;
-        node = ChangeNode(node, CONST, CONSTVALUE(GetOperResult(node)), node->left, node->right);
-        free(node->left);
-        node->left = nullptr;
-        free(node->right);
-        node->right = nullptr;
+    if (node->right){
+        Simplification(node->right, my_dump, root);
+    }
+    if (node->data_type == CONST){
         if (node->value.number < -EPSILON){
             node = ChangeNode(node, OPERAND, OPERVALUE(SUB_NUM), ChangeNode(node->left, CONST, CONSTVALUE(0), nullptr, nullptr),
-                   ChangeNode(node->right, CONST, CONSTVALUE(node->value.number), nullptr, nullptr));
+                   ChangeNode(node->right, CONST, CONSTVALUE(fabs(node->value.number)), nullptr, nullptr));
+        }
+        return;
+    }
+    else if (node->data_type == VARIABLE){
+        return;
+    }
+    if (node->data_type != FUNCTION){
+        if (node->left->data_type == CONST && node->left->data_type == node->right->data_type){
+            if (node->value.arithmop.operand_num == DIV_NUM && IsZero(node->right->value.number))
+                assert(0);
+            if (!IsZero(node->left->value.number)){
+                node = ChangeNode(node, CONST, CONSTVALUE(GetOperResult(node)), node->left, node->right);
+                free(node->left);
+                free(node->right);
+                node->left = nullptr;
+                node->right = nullptr;
+            }
+        }
+        else if (node->data_type == OPERAND && node->value.arithmop.operand_num == MUL_NUM){
+            if (node->left->data_type == CONST && IsZero(node->left->value.number)){
+                tree_branch_dtor(node->right);
+                tree_branch_dtor(node->left);
+                node = ChangeNode(node, CONST, CONSTVALUE(0), nullptr, nullptr);
+            }
+            else if (node->right->data_type == CONST && IsZero(node->right->value.number)){
+                tree_branch_dtor(node->left);
+                node->value = node->right->value;
+                node->data_type = node->right->data_type;
+                tree_branch_dtor(node->right);
+                node->left  = nullptr;
+                node->right = nullptr;
+            }
+            else if (node->left->data_type == CONST &&
+                     1 - EPSILON < node->left->value.number && node->left->value.number < 1 + EPSILON){
+                tree_branch_dtor(node->left);
+                Node* chnode = CopyNode(node->right);
+                tree_branch_dtor(node->right);
+                node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+                free(chnode);
+            }
+            else if (node->right->data_type == CONST &&
+                     1 - EPSILON < node->right->value.number && node->right->value.number < 1 + EPSILON){
+                tree_branch_dtor(node->right);
+                Node* chnode = CopyNode(node->left);
+                tree_branch_dtor(node->left);
+                node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+                free(chnode);
+            }
+        }
+        else if (node->data_type == OPERAND && node->value.arithmop.operand_num == DIV_NUM){
+            if (node->left->data_type == CONST && IsZero(node->left->value.number)){
+                tree_branch_dtor(node->right);
+                node->value = node->left->value;
+                node->data_type = node->left->data_type;
+                tree_branch_dtor(node->left);
+                node->left  = nullptr;
+                node->right = nullptr;
+            }
+            else if (node->right->data_type == CONST && IsZero(node->right->value.number)){
+                assert(0); // soft return!!!
+            }
+            else if (node->right->data_type == CONST &&
+                     1 - EPSILON < node->right->value.number && node->right->value.number < 1 + EPSILON){
+                tree_branch_dtor(node->right);
+                Node* chnode = CopyNode(node->left);
+                tree_branch_dtor(node->left);
+                node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+                free(chnode);
+            }
+        }
+        else if (node->data_type == OPERAND && node->value.arithmop.operand_num == POW_NUM){
+           if (node->left->data_type == CONST && IsZero(node->left->value.number)){
+                tree_branch_dtor(node->right);
+                node->value = node->left->value;
+                node->data_type = node->left->data_type;
+                tree_branch_dtor(node->left);
+                node->left  = nullptr;
+                node->right = nullptr;
+            }
+            else if (node->right->data_type == CONST && IsZero(node->right->value.number)){
+                assert(0); // soft return!!!
+            }
+            else if (node->right->data_type == CONST &&
+                     1 - EPSILON < node->right->value.number && node->right->value.number < 1 + EPSILON){
+                tree_branch_dtor(node->right);
+                Node* chnode = CopyNode(node->left);
+                tree_branch_dtor(node->left);
+                node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+                free(chnode);
+            }
         }
     }
-    Node* lnode = node->left;
-    Node* rnode = node->right;
-    if ((node->value.arithmop.operand_num == ADD_NUM || node->value.arithmop.operand_num == SUB_NUM) &&
-     ((lnode->data_type == CONST && IsZero(lnode->value.number)) || (rnode->data_type == CONST && IsZero(rnode->value.number)))){
-        if (lnode->data_type == CONST){
-            node = ChangeNode(node, rnode->data_type, rnode->value, rnode->left, rnode->right);
-        }
-        else if (rnode->data_type == CONST){
-            node = ChangeNode(node, lnode->data_type, rnode->value, lnode->left, lnode->right);
-        }
-        else{
-            assert(0);
-        }
-    }
-    #if 0
-    else if (node->value.arithmop.operand_num == MUL_NUM){
-
-    }
-    else if (node->value.arithmop.operand_num == DIV_NUM){
-
-    }
-    else if (node->value.arithmop.operand_num == POW_NUM){
-
-    }
-    else{
-        assert(0);
-    }
-    #endif
-
-
-    return node;
+    return;
 }
 
 

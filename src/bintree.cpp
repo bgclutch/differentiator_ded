@@ -11,7 +11,7 @@
 
 Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
-    // fprintf(stderr, BLUE_TEXT("created node:%p\n"), new_node);
+    fprintf(stderr, BLUE_TEXT("created node:%p\n"), new_node);
     switch (data_type) {
     case VARIABLE:
         new_node->data_type = VARIABLE;
@@ -62,20 +62,19 @@ Tree_Errors tree_is_err(const Tree_Errors result, const char* name, const size_t
 }
 
 
-void tree_branch_dtor(Node* node, const char* data, const size_t len)
+void tree_branch_dtor(Node* node)
 {
     assert(node);
-    assert(data);
 
     if(node->left != nullptr)
     {
-        tree_branch_dtor(node->left, data, len);
+        tree_branch_dtor(node->left);
     }
     if(node->right != nullptr)
     {
-        tree_branch_dtor(node->right, data, len);
+        tree_branch_dtor(node->right);
     }
-    // fprintf(stderr, RED_TEXT("deleted node:%p\n"), node);
+    fprintf(stderr, RED_TEXT("free node:%p\n"), node);
     free(node);
 
     return;
