@@ -6,12 +6,6 @@
 
 Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* database);
 
-Differ_Err write_tree_to_file(Node* root, const char* outpfilename);
-
-void write_nodes_to_file(Node* node, FILE* file);
-
-Differ_Err write_tree_to_file(Node* root, FILE* file);
-
 Tree tree_ctor(const char* database);
 
 void tree_dtor(Tree* tree);

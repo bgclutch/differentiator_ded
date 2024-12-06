@@ -368,8 +368,7 @@ FILE* PrepareTexDumpFile(const char* texfilename) {
     fprintf(texfile,
             "\\documentclass[a4paper]{article}\n"
             "\\usepackage[utf8]{inputenc}\n"
-            "\\usepackage[T2A]{fontenc}\n"
-            "\\usepackage[english,russian]{babel}\n"
+            "\\usepackage[english]{babel}\n"
             "\\usepackage[left=25mm, top=20mm, right=25mm, bottom=30mm, nohead, nofoot]{geometry}\n"
             "\\usepackage{amsmath,amsfonts,amssymb}\n"
             "\\usepackage{fancybox,fancyhdr}\n"
@@ -381,14 +380,9 @@ FILE* PrepareTexDumpFile(const char* texfilename) {
             "\\usepackage{xcolor}\n"
             "\\usepackage{hyperref}\n"
             "\\newcommand{\\lr}[1]{\\left({#1}\\right)}\n"
-            "\\usepackage{enumitem}\n"
             "\\usepackage{graphicx}\n"
             "\\usepackage{float}\n"
             "\\usepackage{multicol}\n"
-            "\\usepackage{asymptote}\n"
-            "\\usepackage{comment}\n"
-            "\\usepackage{tikz}\n"
-            "\\usepackage{wrapfig}\n"
             "\\setlength{\\footskip}{12.0pt}\n"
             "\\setlength{\\headheight}{12.0pt}\n"
             "\\begin{document}\n");
@@ -404,15 +398,15 @@ Tree_Err CloseAndCreateTeXpdf(FILE* texfile) {
     if(file_close(texfile))
         return WFILE_CLOSE_ERR;
 
-    size_t texfilenamesize = strlen(TEX) + sizeof(char) + strlen(TEXEXT);
+    size_t texfilenamesize = strlen(PATHTEX) + strlen(TEX) + sizeof(char) + strlen(TEXEXT);
 
     char* texfilename = (char*)calloc(texfilenamesize, sizeof(char));
-    sprintf(texfilename, "%s%s", TEX, TEXEXT);
+    sprintf(texfilename, "%s%s%s", PATHTEX, TEX, TEXEXT);
 
-    size_t textopdfsize = strlen("cd dumps/TeX\n pdflatex\nrm -rf *.log *.aux *.out\n   ") + strlen(PATHTEX) + texfilenamesize;
+    size_t textopdfsize = strlen("cd dumps/TeX\n pdflatex\nrm -rf *.log *.aux *.out\n   ") + texfilenamesize;
 
     char* textopdf = (char*)calloc(textopdfsize, sizeof(char));
-    sprintf(textopdf, "pdflatex %s%s\nrm -rf *.log *.aux *.out\n", PATHTEX, texfilename);
+    sprintf(textopdf, "pdflatex %s\nrm -rf *.log *.aux *.out\n", texfilename);
 
     system(textopdf);
 
@@ -442,7 +436,14 @@ void WriteNodeToTeX(Node* node, FILE* texfile) {
 
     switch (node->data_type){
     case OPERATOR:
+    if (node->left->data_type == node->right->data_type){
+        fprintf(texfile, "(");
         OperToFile(node, texfile);
+        fprintf(texfile, ")");
+    }
+    else{
+        OperToFile(node, texfile);
+    }
         break;
 
     case CONST:

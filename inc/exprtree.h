@@ -40,13 +40,15 @@ struct Value_Type{
     double         number;
 };
 
-enum Data_Type{
-    SYNTAXERROR = -1,
-    VARIABLE    =  0,
-    CONST       =  1,
-    OPERATOR    =  2,
-    FUNCTION    =  3,
-};
+// enum Data_Type{
+//     SYNTAXERROR = -1,
+//     VARIABLE    =  0,
+//     CONST       =  1,
+//     OPERATOR    =  2,
+//     FUNCTION    =  3,
+// };
+
+#include "putnodetype.h"
 
 struct Node{
     Node*        parent;

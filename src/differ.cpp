@@ -30,6 +30,7 @@ Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t
 
 
 Node* Differentiation(Node* node) {
+    assert(node);
     if (node->data_type == CONST || node->data_type == VARIABLE){
         node = DiffLeaf(node);
     }
@@ -79,26 +80,31 @@ Node* Differentiation(Node* node) {
 
 
 Node* AddDiff(Node* node) {
+    assert(node);
     return DIFFADD(node);
 }
 
 Node* SubDiff(Node* node) {
+    assert(node);
     return DIFFSUB(node);
 }
 
 Node* MulDiff(Node* node) {
+    assert(node);
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
     return DIFFMUL(node, cleft, cright);
 }
 
 Node* DivDiff(Node* node) {
+    assert(node);
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
     return DIFFDIV(node, cleft, cright);
 }
 
 Node* PowDiff(Node* node) {
+    assert(node);
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
     int result = 0;
@@ -115,6 +121,7 @@ Node* PowDiff(Node* node) {
 }
 // TODO codegeneration!
 Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // FIXME asserts !everywhere
+    assert(node);
     switch (data_type) {
     case VARIABLE:
         node->data_type = VARIABLE;
@@ -130,10 +137,26 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
         break;
     case SYNTAXERROR: // not good
         assert(0);
-
     default:
         assert(0);
     }
+
+
+    #if 0
+    #define PUTNODETYPE(Data_Type)\
+    case ##Data_Type:\
+        node->data_type = ##Data_Type;\
+        break;
+
+    switch (data_type) {
+        #include "../inc/getnodetype.h"
+        default:
+            assert(0);
+    }
+
+    #undef PUTNODETYPE
+    #endif
+
 
     node->value = value;
     node->left  = left;
@@ -147,26 +170,31 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
 }
 
 Node* SinDiff(Node* node) {
+    assert(node);
     Node* cright = CopyNode(node->right);
     return DIFFSIN(node, cright);
 }
 
 Node* CosDiff(Node* node) {
+    assert(node);
     Node* cright = CopyNode(node->right);
     return DIFFCOS(node, cright);
 }
 
 Node* TanDiff(Node* node) {
+    assert(node);
     Node* cright = CopyNode(node->right);
     return DIFFTAN(node, cright);
 }
 
 Node* LogDiff(Node* node) {
+    assert(node);
     Node* cright = CopyNode(node->right);
     return DIFFLN(node, cright);
 }
 
 void IsSmthInBranch(Node* node, Data_Type data_type, int result) { // node->left needed for base node->right needed for power
+    assert(node);
     if (node->data_type == data_type){
         result = 1;
     }
@@ -180,6 +208,7 @@ void IsSmthInBranch(Node* node, Data_Type data_type, int result) { // node->left
 
 
 Node* DiffLeaf(Node* node) {
+    assert(node);
     if (node->data_type == CONST)
         node->value.number = 0;
     else if (node->data_type == VARIABLE){
@@ -192,6 +221,7 @@ Node* DiffLeaf(Node* node) {
 
 
 Node* CopyNode(Node* node) {
+    assert(node);
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
     new_node->data_type = node->data_type;
     new_node->parent    = node->parent;
@@ -210,6 +240,7 @@ Node* CopyNode(Node* node) {
 
 // TODO codegeneration
 double GetOperResult(Node* node) {
+    assert(node);
     double num = 0;
     switch (node->value.arithmop.operator_num){
         case ADD_NUM:
@@ -235,7 +266,19 @@ double GetOperResult(Node* node) {
         default:
             assert(0);
     }
+
     return num;
+    #if 0
+    #define GETOPERATIONRESULT(first, second, oper)\
+        return first ##oper second
+
+    switch (node->value.arithmop.operator_num){
+        #include "../inc/operres.h"
+        default:
+            assert(0);
+    }
+    #undef GETOPERATIONRESULT
+    #endif
 }
 
 int IsZero(const double num) {

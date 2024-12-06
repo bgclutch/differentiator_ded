@@ -40,6 +40,9 @@ Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* da
 }
 #if 1
 Node* GetLexicalAnalyzedBuf(const char* buffer, const size_t bufsize, size_t* analyzedbufsize) {
+    assert(buffer);
+    assert(analyzedbufsize);
+
     Node* analyzedbuffer = (Node*)calloc(sizeof(Node), bufsize);
     size_t position = 0;
     for(size_t i = 0; buffer[position] != '\0'; i++, analyzedbufsize++){
@@ -50,6 +53,8 @@ Node* GetLexicalAnalyzedBuf(const char* buffer, const size_t bufsize, size_t* an
 }
 
 Data_Type AnalyzeDataType(const char* symbol) {
+    assert(symbol);
+
     Data_Type data_type = SYNTAXERROR;
 
     if (IsConst(*symbol)){
@@ -69,8 +74,10 @@ Data_Type AnalyzeDataType(const char* symbol) {
 }
 
 Value_Type AnalyzeValue(const Data_Type data_type, const char* symbol, size_t* position) {
-    Value_Type value = {};
+    assert(symbol);
+    assert(position);
 
+    Value_Type value = {};
     switch (data_type)
     {
     case CONST:
@@ -98,6 +105,8 @@ Value_Type AnalyzeValue(const Data_Type data_type, const char* symbol, size_t* p
 }
 
 Node GetAnalyzedNode(const char* buffer, size_t* position) {
+    assert(buffer);
+    assert(position);
     Node node = {};
     node.data_type = AnalyzeDataType(buffer + *position);
     node.value     = AnalyzeValue(node.data_type, buffer, position);
@@ -109,6 +118,9 @@ Node GetAnalyzedNode(const char* buffer, size_t* position) {
 }
 
 double GetNum(const char* string, size_t* position) {
+    assert(string);
+    assert(position);
+
     double val   = 0;
     int counter     = 0;
     int flag_double = 0;
@@ -132,6 +144,7 @@ double GetNum(const char* string, size_t* position) {
 #endif
 Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
     assert(tree);
+    assert(database);
 
     size_t buffer_size = 0;
     char* buffer = nullptr;
@@ -154,6 +167,8 @@ Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
 
 Tree tree_ctor(const char* database)
 {
+    assert(database);
+
     Tree tree = {};
     tree.analyzedbuf = nullptr;
     ReadTreeFromFileWithRecDescent(&tree, database);
@@ -171,10 +186,16 @@ void tree_dtor(Tree* tree)
 }
 
 Node* RecursiveDescent(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     return GetRoot(string, position); // root
 }
 
 Node* GetRoot(const char* string, size_t* position) {
+    assert(string);
+    assert(position);
+
     Node* node = GetSumOrSub(string, position);
     if (string[*position] != '\0'){
         SyntaxError(__FILE__, __LINE__, *position);
@@ -184,6 +205,9 @@ Node* GetRoot(const char* string, size_t* position) {
 }
 
 Node* GetSumOrSub(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     Node* node_left = GetMulOrDiv(string, position);
     while (string[*position] == ADD || string[*position] == SUB){
         int oper = string[*position];
@@ -195,6 +219,9 @@ Node* GetSumOrSub(const char* string, size_t* position){
 }
 
 Node* GetMulOrDiv(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     Node* node_left = GetFunction(string, position);
     while (string[*position] == MUL || string[*position] == DIV){
         int oper = string[*position];
@@ -206,6 +233,9 @@ Node* GetMulOrDiv(const char* string, size_t* position){
 }
 
 Node* GetScopeExpr(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     if (string[*position] == '('){
         (*position)++;
         Node* node = GetSumOrSub(string, position);
@@ -219,6 +249,9 @@ Node* GetScopeExpr(const char* string, size_t* position){
 }
 
 Node* GetPower(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     Node* node_left = GetScopeExpr(string, position);
     while (string[*position] == POW){
         (*position)++;
@@ -229,6 +262,9 @@ Node* GetPower(const char* string, size_t* position){
 }
 
 Node* GetFunction(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     if (strncmp(string + *position, SIN, strlen(SIN)) == 0){
         (*position) += strlen(SIN);
         return GETFUNC(SIN_NUM, GetPower(string, position));
@@ -251,6 +287,9 @@ Node* GetFunction(const char* string, size_t* position){
 }
 
 Node* GetConstOrVar(const char* string, size_t* position){
+    assert(string);
+    assert(position);
+
     if (isalpha(string[*position])) {
         char variable = string[*position];
         (*position)++;
@@ -281,6 +320,8 @@ Node* GetConstOrVar(const char* string, size_t* position){
 
 
 void SyntaxError(const char* file, const size_t line, const size_t position){
+    assert(file);
+
     fprintf(stderr, "%s:%lu\nincorrect symbol's position:%lu\n", file, line, position);
     assert(0);
     return;
