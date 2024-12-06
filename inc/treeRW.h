@@ -16,6 +16,16 @@ Tree tree_ctor(const char* database);
 
 void tree_dtor(Tree* tree);
 
+Node* GetLexicalAnalyzedBuf(const char* buffer, const size_t bufsize, size_t* analyzedbufsize);
+
+Node GetAnalyzedNode(const char* buffer, size_t* position);
+
+Data_Type AnalyzeDataType(const char* symbol);
+
+Value_Type AnalyzeValue(const Data_Type data_type, const char* symbol, size_t* position);
+
+double GetNum(const char* string, size_t* position);
+
 Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database);
 
 Node* RecursiveDescent(const char*, size_t*);

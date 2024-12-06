@@ -5,6 +5,7 @@
 
 #include "../inc/dump.h"
 #include "../inc/bintree.h"
+#include "../../lib_file_proc/file.h"
 
 Dump_Errors prepare_graphic_file(const Dump_St General_Dump)
 {
@@ -241,14 +242,14 @@ void print_data_string(const Value_Type* value, const Data_Type data_type, FILE*
 
     switch (data_type)
     {
-    case OPERAND:
-        fprintf(dump_file, "%c", value->arithmop.operand);
+    case OPERATOR:
+        fprintf(dump_file, "%c", value->arithmop.oper);
         break;
     case CONST:
         fprintf(dump_file, "%lg", value->number);
         break;
     case VARIABLE:
-        fprintf(dump_file , "%c", value->varaible);
+        fprintf(dump_file, "%c", value->varaible);
         break;
     case FUNCTION:
         fprintf(dump_file, "%s", value->funciton.func);
@@ -331,22 +332,7 @@ void create_html(Dump_St General_Dump)
     close_file_html(General_Dump.HTML_DUMP);
 }
 
-#if 0
-void print_akinator_instruction()
-{
-    fprintf(stderr,
-            "welcome to the \"which matvey are you\" game!\n"
-            "here you can get your matvey portrait from many different questions\n"
-            "if you want " YELLOW_TEXT("to play") ", start the program with " GREEN_TEXT("\"./bintree --play\"\n")
-            "if you need " BLUE_TEXT("definition of matvey's condition ") "input " GREEN_TEXT("\"./bintree --define\"\n")
-            "if you want " BLUE_TEXT("to compare definitions ") "input " GREEN_TEXT("\"./bintree --compare\"\n")
-            "and if you need " BLUE_TEXT("help ") "input " GREEN_TEXT("\"./bintree --h\"\n")
-            "enjoy)\n"
-            "ver 1.1\n");
-}
-#endif
-
-
+// TODO codegeneration???
 const char* GetDataType(const Node* node){
     switch (node->data_type)
     {
@@ -356,8 +342,8 @@ const char* GetDataType(const Node* node){
         case CONST:
             return "constant";
             break;
-        case OPERAND:
-            return "operand";
+        case OPERATOR:
+            return "operator";
             break;
         case FUNCTION:
             return "function";
@@ -370,4 +356,171 @@ const char* GetDataType(const Node* node){
     }
 
     return "SYNTAXERROR";
+}
+
+FILE* PrepareTexDumpFile(const char* texfilename) {
+    assert(texfilename);
+    FILE* texfile = nullptr;
+    if(file_write_open(&texfile, texfilename) == FILE_W_OPEN_ERR)
+        return nullptr;
+
+    fprintf(texfile,
+            "\\documentclass[a4paper]{article}\n"
+            "\\usepackage[utf8]{inputenc}\n"
+            "\\usepackage[T2A]{fontenc}\n"
+            "\\usepackage[english,russian]{babel}\n"
+            "\\usepackage[left=25mm, top=20mm, right=25mm, bottom=30mm, nohead, nofoot]{geometry}\n"
+            "\\usepackage{amsmath,amsfonts,amssymb}\n"
+            "\\usepackage{fancybox,fancyhdr}\n"
+            "\\pagestyle{fancy}\n"
+            "\\fancyhf{}\n"
+            "\\fancyfoot[R]{\\thepage}\n"
+            "\\setcounter{page}{2}\n"
+            "\\headsep=10mm\n"
+            "\\usepackage{xcolor}\n"
+            "\\usepackage{hyperref}\n"
+            "\\newcommand{\\lr}[1]{\\left({#1}\\right)}\n"
+            "\\usepackage{enumitem}\n"
+            "\\usepackage{graphicx}\n"
+            "\\usepackage{float}\n"
+            "\\usepackage{multicol}\n"
+            "\\usepackage{asymptote}\n"
+            "\\usepackage{comment}\n"
+            "\\usepackage{tikz}\n"
+            "\\usepackage{wrapfig}\n"
+            "\\setlength{\\footskip}{12.0pt}\n"
+            "\\setlength{\\headheight}{12.0pt}\n"
+            "\\begin{document}\n");
+
+    return texfile;
+}
+
+Tree_Err CloseTeX(FILE* texfile) {
+    assert(texfile);
+
+    fprintf(texfile, "\\end{document}\n");
+
+    if(file_close(texfile))
+        return WFILE_CLOSE_ERR;
+
+    return TREE_IS_OKAY_SH;
+}
+
+
+Tree_Err WriteTreeToTex(Node* root, FILE* texfile, const char* string) {
+    assert(root);
+
+    fprintf(texfile, "\n\\begin{equation}\n"
+                     "%s", string);
+
+    WriteNodeToTeX(root, texfile);
+
+    fprintf(texfile, "\n\\end{equation}\n");
+
+    return TREE_IS_OKAY_SH;
+}
+
+void WriteNodeToTeX(Node* node, FILE* texfile) {
+    assert(node);
+    assert(texfile);
+
+    switch (node->data_type){
+    case OPERATOR:
+        OperToFile(node, texfile);
+        break;
+
+    case CONST:
+        fprintf(texfile, "%lg", node->value.number);
+        break;
+
+    case VARIABLE:
+        fprintf(texfile, "x");
+        break;
+    case FUNCTION:
+        FuncToFile(node, texfile);
+        break;
+    case SYNTAXERROR:
+        assert(0);
+    default:
+        assert(0);
+    }
+
+    return;
+}
+
+void OperToFile(Node* node, FILE* texfile) {
+    if (node->value.arithmop.operator_num== ADD_NUM)
+    {
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, " + ");
+        WriteNodeToTeX(node->right, texfile);
+    }
+    if (node->value.arithmop.operator_num == SUB_NUM)
+    {
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, " - ");
+        WriteNodeToTeX(node->right, texfile);
+    }
+    if (node->value.arithmop.operator_num == MUL_NUM)
+    {
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, " \\cdot ");
+        WriteNodeToTeX(node->right, texfile);
+        #if 0
+        if((node->right->data_type == OP) && *(int*)(node->right->data) < 3)
+        {
+            fprintf(texfile, "(");
+            WriteNodeToTeX(node->right, texfile);
+            fprintf(texfile, ")");
+        }
+        else
+        {
+        }
+            #endif
+
+    }
+    if (node->value.arithmop.operator_num == DIV_NUM)
+    {
+        fprintf(texfile, "\\frac{");
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, "}{");
+        WriteNodeToTeX(node->right, texfile);
+        fprintf(texfile, "}");
+    }
+    if (node->value.arithmop.operator_num == POW)
+    {
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, " ^{ ");
+        WriteNodeToTeX(node->right, texfile);
+        fprintf(texfile, " }");
+    }
+    return;
+}
+
+void FuncToFile(Node* node, FILE* texfile) {
+    if (node->value.funciton.func_num == LN_NUM)
+    {
+        fprintf(texfile, "\\ln{");
+        WriteNodeToTeX(node->right, texfile);
+        fprintf(texfile, "}");
+    }
+    if(node->value.funciton.func_num == SIN_NUM)
+    {
+        fprintf(texfile, "\\sin(");
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, ")");
+    }
+    if(node->value.funciton.func_num == COS_NUM)
+    {
+        fprintf(texfile, "\\cos(");
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, ")");
+    }
+    if(node->value.funciton.func_num == TAN_NUM)
+    {
+        fprintf(texfile, "\\tan(");
+        WriteNodeToTeX(node->left, texfile);
+        fprintf(texfile, ")");
+    }
+    return;
 }

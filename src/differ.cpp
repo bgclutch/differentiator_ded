@@ -33,20 +33,20 @@ Node* Differentiation(Node* node) {
     if (node->data_type == CONST || node->data_type == VARIABLE){
         node = DiffLeaf(node);
     }
-    else if (node->data_type == OPERAND){
-        if (node->value.arithmop.operand == ADD){
+    else if (node->data_type == OPERATOR){
+        if (node->value.arithmop.oper == ADD){
             node = AddDiff(node);
         }
-        else if (node->value.arithmop.operand == SUB){
+        else if (node->value.arithmop.oper == SUB){
             node = SubDiff(node);
         }
-        else if (node->value.arithmop.operand == MUL){
+        else if (node->value.arithmop.oper == MUL){
             node = MulDiff(node);
         }
-        else if (node->value.arithmop.operand == DIV){
+        else if (node->value.arithmop.oper == DIV){
             node = DivDiff(node);
         }
-        else if (node->value.arithmop.operand == POW){
+        else if (node->value.arithmop.oper == POW){
             node = PowDiff(node);
         }
         else{
@@ -111,7 +111,7 @@ Node* PowDiff(Node* node) {
         assert(0);
     }
 }
-// TODO codegeneration?
+// TODO codegeneration!
 Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right) { // FIXME asserts !everywhere
     switch (data_type) {
     case VARIABLE:
@@ -120,8 +120,8 @@ Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, 
     case CONST:
         node->data_type = CONST;
         break;
-    case OPERAND:
-        node->data_type = OPERAND;
+    case OPERATOR:
+        node->data_type = OPERATOR;
         break;
     case FUNCTION:
         node->data_type = FUNCTION;
@@ -208,9 +208,10 @@ Node* CopyNode(Node* node) {
     return new_node;
 }
 
+// TODO codegeneration
 double GetOperResult(Node* node) {
     double num = 0;
-    switch (node->value.arithmop.operand_num){
+    switch (node->value.arithmop.operator_num){
         case ADD_NUM:
             num = node->left->value.number + node->right->value.number;
             break;
@@ -225,6 +226,9 @@ double GetOperResult(Node* node) {
             break;
         case POW_NUM:
             num = pow(node->left->value.number, node->right->value.number);
+            break;
+        case BSCOPE_NUM:
+        case CSCOPE_NUM:
             break;
         case SYNTERR_N:
             assert(0);

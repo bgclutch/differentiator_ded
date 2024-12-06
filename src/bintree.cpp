@@ -12,6 +12,7 @@
 Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left, Node* right) {
     Node* new_node = (Node*)calloc(sizeof(Node), 1);
     // fprintf(stderr, BLUE_TEXT("created node:%p\n"), new_node);
+    // TODO codegeneration
     switch (data_type) {
     case VARIABLE:
         new_node->data_type = VARIABLE;
@@ -21,8 +22,8 @@ Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left,
         new_node->data_type = CONST;
         break;
 
-    case OPERAND:
-        new_node->data_type = OPERAND;
+    case OPERATOR:
+        new_node->data_type = OPERATOR;
         break;
 
     case FUNCTION:
@@ -30,7 +31,7 @@ Node* InitNewNode(const Data_Type data_type, const Value_Type value, Node* left,
         break;
 
     case SYNTAXERROR: // not good
-        assert(0);
+        return nullptr;
 
     default:
         assert(0);
@@ -94,8 +95,8 @@ Value_Type GetValue(const Data_Type data_type, const int op_num, const char vari
             value.number = number;
             break;
 
-        case OPERAND:
-            value.arithmop = operand_array[op_num];
+        case OPERATOR:
+            value.arithmop = operator_array[op_num];
             break;
 
         case FUNCTION:

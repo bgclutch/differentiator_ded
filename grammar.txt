@@ -1,0 +1,12 @@
+GetRoot:       calls GetSumOrSub  from set of values ('+', '-')
+GetSumOrSub:   calls GetMulOrDiv  from set of values ('*', '/')
+GetMulOrDiv:   calls GetFunction  from set of values ('sin', 'cos', 'tan', 'ln')
+GetFunction:   calls GetPower
+GetPower:      calls GetScopeExpr from set of values ('^')
+GetScopeExpr:  calls '('GetSumOrSub')' or calls GetConstOrVar
+GetConstOrVar: returns double number or variable from set of values
+
+set of values : ['0'-'9', '.', <- double number
+                 'sin', 'cos', 'tan', 'ln', <- functions
+                 'x', <- variable
+                 '+', '-', '*', '/', '^', '(', ')' <- operators]

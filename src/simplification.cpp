@@ -11,7 +11,7 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
     }
     if (node->data_type == CONST){
         if (node->value.number < -EPSILON){
-            node = ChangeNode(node, OPERAND, OPERVALUE(SUB_NUM), ChangeNode(node->left, CONST, CONSTVALUE(0), nullptr, nullptr),
+            node = ChangeNode(node, OPERATOR, OPERVALUE(SUB_NUM), ChangeNode(node->left, CONST, CONSTVALUE(0), nullptr, nullptr),
                    ChangeNode(node->right, CONST, CONSTVALUE(fabs(node->value.number)), nullptr, nullptr));
         }
         return;
@@ -24,9 +24,9 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
     }
     else
     if (node->left->data_type == CONST && node->left->data_type == node->right->data_type){
-        if (node->value.arithmop.operand_num == DIV_NUM && IsZero(node->right->value.number))
+        if (node->value.arithmop.operator_num == DIV_NUM && IsZero(node->right->value.number))
             assert(0);
-        if (IsZero(node->left->value.number) && node->value.arithmop.operand_num == SUB_NUM &&
+        if (IsZero(node->left->value.number) && node->value.arithmop.operator_num == SUB_NUM &&
             !IsZero(node->right->value.number)){
             return;
         }
@@ -36,7 +36,7 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
         node->left  = nullptr;
         node->right = nullptr;
     }
-    else if (node->data_type == OPERAND && node->value.arithmop.operand_num == MUL_NUM){
+    else if (node->data_type == OPERATOR && node->value.arithmop.operator_num == MUL_NUM){
         if (node->left->data_type == CONST && IsZero(node->left->value.number)){
             tree_branch_dtor(node->right);
             tree_branch_dtor(node->left);
@@ -67,7 +67,7 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
             free(chnode);
         }
     }
-    else if (node->data_type == OPERAND && node->value.arithmop.operand_num == DIV_NUM){
+    else if (node->data_type == OPERATOR && node->value.arithmop.operator_num == DIV_NUM){
         if (node->left->data_type == CONST && IsZero(node->left->value.number)){
             tree_branch_dtor(node->right);
             node->value = node->left->value;
@@ -88,7 +88,7 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
             free(chnode);
         }
     }
-    else if (node->data_type == OPERAND && node->value.arithmop.operand_num == POW_NUM){
+    else if (node->data_type == OPERATOR && node->value.arithmop.operator_num == POW_NUM){
         if (node->right->data_type == CONST && IsZero(node->right->value.number)){
             tree_branch_dtor(node->right);
             tree_branch_dtor(node->left);
@@ -96,6 +96,31 @@ void Simplification(Node* node) { // a lot copypaste but it all used once
         }
         else if (node->right->data_type == CONST &&
                     1 - EPSILON < node->right->value.number && node->right->value.number < 1 + EPSILON){
+            tree_branch_dtor(node->right);
+            Node* chnode = CopyNode(node->left);
+            tree_branch_dtor(node->left);
+            node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+            free(chnode);
+        }
+    } // may fall
+    else if (node->data_type == OPERATOR && node->value.arithmop.operator_num == ADD_NUM){
+        if (node->left->data_type == CONST && IsZero(node->left->value.number)){
+            tree_branch_dtor(node->left);
+            Node* chnode = CopyNode(node->right);
+            tree_branch_dtor(node->right);
+            node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+            free(chnode);
+        }
+        else if (node->right->data_type == CONST && IsZero(node->right->value.number)){
+            tree_branch_dtor(node->right);
+            Node* chnode = CopyNode(node->left);
+            tree_branch_dtor(node->left);
+            node = ChangeNode(node, chnode->data_type, chnode->value, chnode->left, chnode->right);
+            free(chnode);
+        }
+    }
+    else if (node->data_type == OPERATOR && node->value.arithmop.operator_num == SUB_NUM){
+        if (node->right->data_type == CONST && IsZero(node->right->value.number)){
             tree_branch_dtor(node->right);
             Node* chnode = CopyNode(node->left);
             tree_branch_dtor(node->left);

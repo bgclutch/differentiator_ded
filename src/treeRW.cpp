@@ -38,20 +38,98 @@ Differ_Err create_data_buffer(char** buffer, size_t* buffer_size, const char* da
 
     return DIFFER_IS_OKAY;
 }
-
-char* GetLexicalAnalyzedBuf(const char* buffer, const size_t bufsize) {
-    char* analyzedbuffer = (char*)calloc(sizeof(Node), bufsize);
-    for(size_t i = 0; i < bufsize; i++){
-        analyzedbuffer[i] = InitNewNode();
+#if 1
+Node* GetLexicalAnalyzedBuf(const char* buffer, const size_t bufsize, size_t* analyzedbufsize) {
+    Node* analyzedbuffer = (Node*)calloc(sizeof(Node), bufsize);
+    size_t position = 0;
+    for(size_t i = 0; buffer[position] != '\0'; i++, analyzedbufsize++){
+        analyzedbuffer[i] = GetAnalyzedNode(buffer, &position);
     }
-
-
-
-
 
     return analyzedbuffer;
 }
 
+Data_Type AnalyzeDataType(const char* symbol) {
+    Data_Type data_type = SYNTAXERROR;
+
+    if (IsConst(*symbol)){
+        data_type = CONST;
+    }
+    else if (IsFunction(symbol)){
+        data_type = FUNCTION;
+    }
+    else if (IsOperator(*symbol)){
+        data_type = OPERATOR;
+    }
+    else if (*symbol == 'x'){
+        data_type = VARIABLE;
+    }
+
+    return data_type;
+}
+
+Value_Type AnalyzeValue(const Data_Type data_type, const char* symbol, size_t* position) {
+    Value_Type value = {};
+
+    switch (data_type)
+    {
+    case CONST:
+        value = CONSTVALUE(GetNum(symbol, position));
+        break;
+    case VARIABLE:
+        value = VARVALUE(*symbol);
+        (*position)++;
+        break;
+    case FUNCTION:
+        value = FUNCVALUE(GetAlgFuncNum(symbol, position));
+        break;
+    case OPERATOR:
+        value = OPERVALUE(GetOperatorNum(*symbol));
+        (*position)++;
+        break;
+    case SYNTAXERROR:
+        assert(0); // FIXME ITS AWFUL
+        break;
+    default:
+        break;
+    }
+
+    return value;
+}
+
+Node GetAnalyzedNode(const char* buffer, size_t* position) {
+    Node node = {};
+    node.data_type = AnalyzeDataType(buffer + *position);
+    node.value     = AnalyzeValue(node.data_type, buffer, position);
+    node.left      = nullptr;
+    node.right     = nullptr;
+    node.parent    = nullptr;
+
+    return node;
+}
+
+double GetNum(const char* string, size_t* position) {
+    double val   = 0;
+    int counter     = 0;
+    int flag_double = 0;
+    size_t old_position = *position;
+    while (IsConst(string[*position])){
+        if (flag_double)
+            counter++;
+        if (string[*position] == '.')
+            flag_double = 1;
+        else
+            val = val * 10 + (string[*position] - '0');
+
+        (*position)++;
+    }
+    if (old_position == *position)
+        SyntaxError(__FILE__, __LINE__, *position);
+    val /= pow(10, counter);
+
+    return val;
+}
+#endif
 Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
     assert(tree);
 
@@ -67,6 +145,8 @@ Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
     tree->buffer = buffer;
     size_t position = 0;
 
+    // tree->analyzedbuf = GetLexicalAnalyzedBuf(tree->buffer, buffer_size, &tree->analyzedbufsize);
+
     tree->root = RecursiveDescent(tree->buffer, &position);
 
     return DIFFER_IS_OKAY;
@@ -75,6 +155,7 @@ Differ_Err ReadTreeFromFileWithRecDescent(Tree* tree, const char* database) {
 Tree tree_ctor(const char* database)
 {
     Tree tree = {};
+    tree.analyzedbuf = nullptr;
     ReadTreeFromFileWithRecDescent(&tree, database);
 
     return tree;
@@ -86,6 +167,7 @@ void tree_dtor(Tree* tree)
 
     tree_branch_dtor(tree->root);
     free(tree->buffer);
+    free(tree->analyzedbuf);
 }
 
 Node* RecursiveDescent(const char* string, size_t* position){
@@ -107,7 +189,7 @@ Node* GetSumOrSub(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetMulOrDiv(string, position);
-        node_left = GETOPER(GetOperandNum((char)oper), node_left, node_right);
+        node_left = GETOPER(GetOperatorNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
@@ -118,7 +200,7 @@ Node* GetMulOrDiv(const char* string, size_t* position){
         int oper = string[*position];
         (*position)++;
         Node* node_right = GetFunction(string, position);
-        node_left = GETOPER(GetOperandNum((char)oper), node_left, node_right);
+        node_left = GETOPER(GetOperatorNum((char)oper), node_left, node_right);
     }
     return node_left;
 }
@@ -199,7 +281,7 @@ Node* GetConstOrVar(const char* string, size_t* position){
 
 
 void SyntaxError(const char* file, const size_t line, const size_t position){
-    fprintf(stderr, "%s:%lu\nposition:%lu\n", file, line, position);
+    fprintf(stderr, "%s:%lu\nincorrect symbol's position:%lu\n", file, line, position);
     assert(0);
     return;
 }

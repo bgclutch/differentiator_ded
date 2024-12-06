@@ -15,7 +15,9 @@ static const char* const OBJXT  = "-o";
 static const char* const HTMLXT = ".html";
 static const char* const PNGXT  = ".png";
 static const char* const TPNG   = "-Tpng";
-static const char* const CATPIC = "dumps/html/dump_monya.png";
+
+static const char* const EQU    = "y = ";
+static const char* const DEQU   = "y' = ";
 
 #define DUMP_ERR(result, error) if(dump_is_err(result, __FILE__, __LINE__) == MACRO_DUMP_ERR) return error
 
@@ -23,6 +25,7 @@ struct Dump_St
 {
     const char* const GRAPHIC_DUMP = "dumps/graphic_dump.dot";
     const char* const HTML_DUMP    = "dumps/html/html_dump.html";
+    const char* const TEX_DUMP     = "dumps/TeX/dump.tex";
     int filenum = 0;
 };
 
@@ -45,8 +48,6 @@ enum Colors
     BRANCH_COLOR,
     LEAF_COLOR,
 };
-
-
 
 Dump_Errors dump_is_err(Dump_Errors result, const char* name, const size_t line);
 
@@ -80,8 +81,18 @@ void create_html(Dump_St General_Dump);
 
 Dump_Errors create_png(Dump_St* General_Dump, Node* root);
 
-void print_akinator_instruction();
-
 const char* GetDataType(const Node* node);
+
+FILE* PrepareTexDumpFile(const char* texfilename);
+
+Tree_Err CloseTeX(FILE* texfile);
+
+Tree_Err WriteTreeToTex(Node* root, FILE* texfile, const char*);
+
+void WriteNodeToTeX(Node* node, FILE* texfile);
+
+void OperToFile(Node* node, FILE* texfile);
+
+void FuncToFile(Node* node, FILE* texfile);
 
 #endif // DUMP_H_

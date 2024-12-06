@@ -4,17 +4,17 @@
 #include "exprtree.h"
 #include "bintree.h"
 //---------------------------------GET VALUE CASES-------------------------------------------------------------------------
-#define OPERVALUE(  index)                        GetValue(OPERAND,  index,        0,     0,     NAN)
-#define VARVALUE(variable)                        GetValue(VARIABLE,     0, variable,     0,     NAN)
-#define FUNCVALUE(  index)                        GetValue(FUNCTION,     0,        0, index,     NAN)
-#define CONSTVALUE(number)                        GetValue(CONST,        0,        0,     0,  number)
+#define OPERVALUE(  index)                        GetValue(OPERATOR,  index,        0,     0,     NAN)
+#define VARVALUE(variable)                        GetValue(VARIABLE,      0, variable,     0,     NAN)
+#define FUNCVALUE(  index)                        GetValue(FUNCTION,      0,        0, index,     NAN)
+#define CONSTVALUE(number)                        GetValue(CONST,         0,        0,     0,  number)
 //--------------------------------CREATE NEW NODE WITH GIVEN TYPE-----------------------------------------------------------------------
 #define GETVAR(  variable)                        InitNewNode(VARIABLE,  VARVALUE( variable), nullptr, nullptr)
 #define GETCONST(value)                           InitNewNode(CONST,     CONSTVALUE(  value), nullptr, nullptr)
-#define GETOPER( oper_num, left, right)           InitNewNode(OPERAND,   OPERVALUE(oper_num),    left,   right)
+#define GETOPER( oper_num, left, right)           InitNewNode(OPERATOR,  OPERVALUE(oper_num),    left,   right)
 #define GETFUNC( func_num, right)                 InitNewNode(FUNCTION,  FUNCVALUE(func_num), nullptr,   right)
 
-#define DIFFOPERNODE(node, oper_num, left, right) ChangeNode(node, OPERAND,   OPERVALUE(oper_num), left, right)
+#define DIFFOPERNODE(node, oper_num, left, right) ChangeNode(node, OPERATOR, OPERVALUE(oper_num), left, right)
 //-----------------------------HELPERS FUNCTIONS FOR DIFF FUNCTIONS------------------------------------------------------------------
 #define DIFFADD(node)                             DIFFOPERNODE(node, ADD_NUM, LDIFF(node), RDIFF(node))
 #define DIFFSUB(node)                             DIFFOPERNODE(node, SUB_NUM, LDIFF(node), RDIFF(node))
