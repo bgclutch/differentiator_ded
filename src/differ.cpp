@@ -101,11 +101,13 @@ Node* DivDiff(Node* node) {
 Node* PowDiff(Node* node) {
     Node* cleft  = CopyNode(node->left);
     Node* cright = CopyNode(node->right);
-    if (!ISVARINBRANCH(node->right)){ // var^const const^const
-        return DIFFPOWCONST(node, cleft, cright);
-    }
-    else if (ISVARINBRANCH(node->right)) { // var^var
+    int result = 0;
+    ISVARINBRANCH(node->right, result);
+    if (!result) { // var^var
         return DIFFPOWVAR(node, cleft, cright);
+    }
+    else if (result){ // var^const const^const
+        return DIFFPOWCONST(node, cleft, cright);
     }
     else {
         assert(0);
@@ -164,18 +166,16 @@ Node* LogDiff(Node* node) {
     return DIFFLN(node, cright);
 }
 
-int IsSmthInBranch(Node* node, Data_Type data_type) { // node->left needed for base node->right needed for power
-    if (node->left)
-        return IsSmthInBranch(node->left, data_type);
-    if (node->right)
-        return IsSmthInBranch(node->right, data_type);
-
-    int value = 0;
-    if (node->data_type == data_type)
-        value = 1;
-    else
-        value = 0;
-    return value;
+void IsSmthInBranch(Node* node, Data_Type data_type, int result) { // node->left needed for base node->right needed for power
+    if (node->data_type == data_type){
+        result = 1;
+    }
+    else{
+        if (node->left)
+            return IsSmthInBranch(node->left, data_type, result);
+        if (node->right)
+            return IsSmthInBranch(node->right, data_type, result);
+    }
 }
 
 

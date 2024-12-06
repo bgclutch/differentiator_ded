@@ -15,10 +15,10 @@
 #define LDIFF(node) Differentiation(node->left)
 #define RDIFF(node) Differentiation(node->right)
 
-#define ISVARINBRANCH(  node) IsSmthInBranch(node, VARIABLE)
-#define ISCONSTINBRANCH(node) IsSmthInBranch(node, CONST)
-#define ISFUNCINBRANCH( node) IsSmthInBranch(node, FUNCTION)
-#define ISOPERINBRANCH( node) IsSmthInBranch(node, OPERAND)
+#define ISVARINBRANCH(  node, result) IsSmthInBranch(node, VARIABLE, result)
+#define ISCONSTINBRANCH(node, result) IsSmthInBranch(node, CONST, result)
+#define ISFUNCINBRANCH( node, result) IsSmthInBranch(node, FUNCTION, result)
+#define ISOPERINBRANCH( node, result) IsSmthInBranch(node, OPERAND, result)
 
 const double EULERSNUM = 2.7183;
 const double PI        = 3.1415;
@@ -45,7 +45,7 @@ Differ_Err differ_is_err(const Differ_Err result, const char* name, const size_t
 
 Node* ChangeNode(Node* node, const Data_Type data_type, const Value_Type value, Node* left, Node* right);
 
-int IsSmthInBranch(Node* node, Data_Type data_type);
+void IsSmthInBranch(Node* node, Data_Type data_type, int result);
 
 Node* Differentiation(Node* node);
 

@@ -16,6 +16,13 @@ static const char* const HTMLXT = ".html";
 static const char* const PNGXT  = ".png";
 static const char* const TPNG   = "-Tpng";
 
+static const char* const PATHTEX = "dumps/TeX/";
+static const char* const TEX     = "tex_dump";
+static const char* const OUTPDIR = "-output-directory=";
+static const char* const JOBNAME = "-jobname=";
+static const char* const TEXEXT  = ".tex";
+
+
 static const char* const EQU    = "y = ";
 static const char* const DEQU   = "y' = ";
 
@@ -25,7 +32,7 @@ struct Dump_St
 {
     const char* const GRAPHIC_DUMP = "dumps/graphic_dump.dot";
     const char* const HTML_DUMP    = "dumps/html/html_dump.html";
-    const char* const TEX_DUMP     = "dumps/TeX/dump.tex";
+    const char* const TEX_DUMP     = "dumps/TeX/tex_dump.tex";
     int filenum = 0;
 };
 
@@ -85,7 +92,7 @@ const char* GetDataType(const Node* node);
 
 FILE* PrepareTexDumpFile(const char* texfilename);
 
-Tree_Err CloseTeX(FILE* texfile);
+Tree_Err CloseAndCreateTeXpdf(FILE* texfile);
 
 Tree_Err WriteTreeToTex(Node* root, FILE* texfile, const char*);
 

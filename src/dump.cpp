@@ -5,6 +5,7 @@
 
 #include "../inc/dump.h"
 #include "../inc/bintree.h"
+#include "../inc/differ.h"
 #include "../../lib_file_proc/file.h"
 
 Dump_Errors prepare_graphic_file(const Dump_St General_Dump)
@@ -395,13 +396,28 @@ FILE* PrepareTexDumpFile(const char* texfilename) {
     return texfile;
 }
 
-Tree_Err CloseTeX(FILE* texfile) {
+Tree_Err CloseAndCreateTeXpdf(FILE* texfile) {
     assert(texfile);
 
     fprintf(texfile, "\\end{document}\n");
 
     if(file_close(texfile))
         return WFILE_CLOSE_ERR;
+
+    size_t texfilenamesize = strlen(TEX) + sizeof(char) + strlen(TEXEXT);
+
+    char* texfilename = (char*)calloc(texfilenamesize, sizeof(char));
+    sprintf(texfilename, "%s%s", TEX, TEXEXT);
+
+    size_t textopdfsize = strlen("cd dumps/TeX\n pdflatex\nrm -rf *.log *.aux *.out\n   ") + strlen(PATHTEX) + texfilenamesize;
+
+    char* textopdf = (char*)calloc(textopdfsize, sizeof(char));
+    sprintf(textopdf, "pdflatex %s%s\nrm -rf *.log *.aux *.out\n", PATHTEX, texfilename);
+
+    system(textopdf);
+
+    free(texfilename);
+    free(textopdf);
 
     return TREE_IS_OKAY_SH;
 }
@@ -430,7 +446,10 @@ void WriteNodeToTeX(Node* node, FILE* texfile) {
         break;
 
     case CONST:
-        fprintf(texfile, "%lg", node->value.number);
+        if(EULERSNUM - EPSILON < node->value.number && node->value.number < EULERSNUM + EPSILON)
+            fprintf(texfile, "e");
+        else
+            fprintf(texfile, "%lg", node->value.number);
         break;
 
     case VARIABLE:
@@ -449,7 +468,7 @@ void WriteNodeToTeX(Node* node, FILE* texfile) {
 }
 
 void OperToFile(Node* node, FILE* texfile) {
-    if (node->value.arithmop.operator_num== ADD_NUM)
+    if (node->value.arithmop.operator_num == ADD_NUM)
     {
         WriteNodeToTeX(node->left, texfile);
         fprintf(texfile, " + ");
@@ -464,19 +483,8 @@ void OperToFile(Node* node, FILE* texfile) {
     if (node->value.arithmop.operator_num == MUL_NUM)
     {
         WriteNodeToTeX(node->left, texfile);
-        fprintf(texfile, " \\cdot ");
+        fprintf(texfile, " * ");
         WriteNodeToTeX(node->right, texfile);
-        #if 0
-        if((node->right->data_type == OP) && *(int*)(node->right->data) < 3)
-        {
-            fprintf(texfile, "(");
-            WriteNodeToTeX(node->right, texfile);
-            fprintf(texfile, ")");
-        }
-        else
-        {
-        }
-            #endif
 
     }
     if (node->value.arithmop.operator_num == DIV_NUM)
@@ -487,7 +495,7 @@ void OperToFile(Node* node, FILE* texfile) {
         WriteNodeToTeX(node->right, texfile);
         fprintf(texfile, "}");
     }
-    if (node->value.arithmop.operator_num == POW)
+    if (node->value.arithmop.operator_num == POW_NUM)
     {
         WriteNodeToTeX(node->left, texfile);
         fprintf(texfile, " ^{ ");
@@ -507,19 +515,19 @@ void FuncToFile(Node* node, FILE* texfile) {
     if(node->value.funciton.func_num == SIN_NUM)
     {
         fprintf(texfile, "\\sin(");
-        WriteNodeToTeX(node->left, texfile);
+        WriteNodeToTeX(node->right, texfile);
         fprintf(texfile, ")");
     }
     if(node->value.funciton.func_num == COS_NUM)
     {
         fprintf(texfile, "\\cos(");
-        WriteNodeToTeX(node->left, texfile);
+        WriteNodeToTeX(node->right, texfile);
         fprintf(texfile, ")");
     }
     if(node->value.funciton.func_num == TAN_NUM)
     {
         fprintf(texfile, "\\tan(");
-        WriteNodeToTeX(node->left, texfile);
+        WriteNodeToTeX(node->right, texfile);
         fprintf(texfile, ")");
     }
     return;

@@ -19,13 +19,15 @@ int main(const int argc, const char* argv[])
     FILE* texdump = PrepareTexDumpFile(dump_st.TEX_DUMP);
     create_png(&dump_st, tree.root);
     WriteTreeToTex(tree.root, texdump, EQU);
+    Simplification(tree.root);
+    WriteTreeToTex(tree.root, texdump, EQU);
     Differentiation(tree.root);
     create_png(&dump_st, tree.root);
     WriteTreeToTex(tree.root, texdump, DEQU);
     Simplification(tree.root);
     create_png(&dump_st, tree.root);
     WriteTreeToTex(tree.root, texdump, DEQU);
-    CloseTeX(texdump);
+    CloseAndCreateTeXpdf(texdump);
     tree_dtor(&tree);
 
     return EXIT_SUCCESS;
